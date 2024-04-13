@@ -45,8 +45,8 @@ model Materials {
 }
 
 model Students {
-  user_ident      Int               @id(map: "PK__Students__D39C7BF476C01D24") @default(autoincrement())
-  fio             String            @db.NVarChar(100)
+  user_ident      Int               @id(map: "PK__Students__D39C7BF42B17E615") @default(autoincrement())
+  fio             String            @unique(map: "UQ__Students__D9908D6ED10241A0") @db.NVarChar(100)
   balance         Int?
   email           String            @db.NVarChar(100)
   user_password   String            @db.NVarChar(100)
@@ -55,7 +55,7 @@ model Students {
 }
 
 model StudentToCourse {
-  STC_id     Int      @id(map: "PK__StudentT__482F14E69C70B8EC") @default(autoincrement())
+  STC_id     Int      @id(map: "PK__StudentT__482F14E6F439890D") @default(autoincrement())
   course_id  Int
   student_id Int
   Courses    Courses  @relation(fields: [course_id], references: [course_id], onUpdate: NoAction, map: "FK__StudentTo__cours__797309D9")
@@ -63,8 +63,8 @@ model StudentToCourse {
 }
 
 model Teachers {
-  user_ident      Int               @id(map: "PK__Teachers__D39C7BF4B9B05713") @default(autoincrement())
-  fio             String            @db.NVarChar(100)
+  user_ident      Int               @id(map: "PK__Teachers__D39C7BF4EA6292A8") @default(autoincrement())
+  fio             String            @unique(map: "UQ__Teachers__D9908D6EAE22B41B") @db.NVarChar(100)
   email           String            @db.NVarChar(100)
   user_password   String            @db.NVarChar(100)
   descipline      String            @db.VarChar(100)
@@ -73,7 +73,7 @@ model Teachers {
 }
 
 model TeacherToCourse {
-  TTC_id     Int      @id(map: "PK__TeacherT__1163A8116982BA51")
+  TTC_id     Int      @id(map: "PK__TeacherT__1163A8111B983313")
   teacher_id Int
   course_id  Int
   Courses    Courses  @relation(fields: [course_id], references: [course_id], onUpdate: NoAction, map: "FK__TeacherTo__cours__7E37BEF6")
@@ -91,7 +91,7 @@ model Tests {
 }
 
 model TestStatus {
-  status_id  Int      @id(map: "PK__TestStat__3683B5315D4BEE5F") @default(autoincrement())
+  status_id  Int      @id(map: "PK__TestStat__3683B53103B4DD19") @default(autoincrement())
   test_id    Int
   student_id Int
   Students   Students @relation(fields: [student_id], references: [user_ident], onUpdate: NoAction, map: "FK__TestStatu__stude__02084FDA")
