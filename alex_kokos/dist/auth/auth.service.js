@@ -28,6 +28,13 @@ let AuthService = class AuthService {
         try {
             if (dto.login === 'admin')
                 throw library_1.PrismaClientKnownRequestError;
+            const teacher = await this.prisma.teachers.findFirst({
+                where: {
+                    fio: dto.login,
+                },
+            });
+            if (teacher)
+                throw library_1.PrismaClientKnownRequestError;
             const user = await this.prisma.students.create({
                 data: {
                     fio: dto.login,
@@ -73,6 +80,39 @@ let AuthService = class AuthService {
             return this.signToken(user.user_ident, user.fio);
         else if (teacher)
             return this.signToken(teacher.user_ident, teacher.fio);
+    }
+    async createTeacher(dto) {
+        try {
+            if (dto.login === 'admin')
+                throw library_1.PrismaClientKnownRequestError;
+            const user = await this.prisma.students.findFirst({
+                where: {
+                    fio: dto.login
+                }
+            });
+            if (user)
+                throw library_1.PrismaClientKnownRequestError;
+            const hash = await argon.hash(dto.password);
+            const teacher = await this.prisma.teachers.create({
+                data: {
+                    fio: dto.login,
+                    email: dto.email,
+                    descipline: dto.descipline,
+                    user_password: hash
+                },
+            });
+            delete teacher.user_password;
+            return teacher;
+        }
+        catch (error) {
+            if (error instanceof library_1.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002')
+                    throw new common_1.ForbiddenException('This login is already exist');
+            }
+            if (error instanceof common_1.ForbiddenException) {
+            }
+            throw Error();
+        }
     }
     async signToken(userId, login) {
         const payload = {

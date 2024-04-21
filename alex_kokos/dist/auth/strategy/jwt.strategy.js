@@ -24,7 +24,6 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.prisma = prisma;
     }
     async validate(payload) {
-        console.log(payload.fio + ')))))))))))))))))))))0');
         if (payload.fio == 'admin') {
             const user = { user_ident: 0, fio: 'admin', role: 'admin' };
             return user;

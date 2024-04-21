@@ -1,10 +1,12 @@
-import { Body, ForbiddenException, HttpCode, HttpStatus, Injectable, Req } from "@nestjs/common";
+import { Body, ForbiddenException, HttpCode, HttpStatus, Injectable, Req, UseGuards } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { AuthDto, LoginDto } from "./dto";
+import { AuthDto, LoginDto, TeacherDto } from "./dto";
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { connected } from "process";
+
 
 @Injectable()
 export class AuthService{
@@ -18,6 +20,15 @@ export class AuthService{
         try{
             if(dto.login === 'admin')
                 throw PrismaClientKnownRequestError;
+            
+            const teacher = await this.prisma.teachers.findFirst({
+                where: {
+                    fio: dto.login,
+                },
+            })
+            if(teacher)
+                throw PrismaClientKnownRequestError;
+
             const user = await this.prisma.students.create({
                 data: {
                     fio: dto.login,
@@ -76,6 +87,50 @@ export class AuthService{
         else if(teacher)
             return this.signToken(teacher.user_ident, teacher.fio);
     }
+
+    async createTeacher(dto:TeacherDto)
+    {
+        try{
+            if(dto.login === 'admin')
+                throw PrismaClientKnownRequestError;
+            const user = await this.prisma.students.findFirst({
+                where: {
+                    fio: dto.login
+                }
+            })
+            if(user)
+                throw PrismaClientKnownRequestError;
+
+
+         
+            const hash = await argon.hash(dto.password);
+            const teacher = await this.prisma.teachers.create({
+                data: {
+                    fio: dto.login,
+                    email: dto.email,
+                    descipline: dto.descipline,
+                    user_password: hash
+                },
+            })
+            delete teacher.user_password;
+            return teacher;
+            
+        }
+        catch(error)
+        {
+            if(error instanceof PrismaClientKnownRequestError)
+            {
+                if(error.code === 'P2002')
+                throw new ForbiddenException('This login is already exist');
+            }
+            if(error instanceof ForbiddenException)
+            {
+
+            }
+            
+            throw Error();
+        }
+    }
     
     async signToken(userId: number, login: string): Promise<{access_token: string}>
     {
@@ -85,7 +140,7 @@ export class AuthService{
         }
         const secret = this.config.get('JWT_SECRET');
         const token = await this.jwt.signAsync(payload, {expiresIn: '15m', secret: secret});
-
+        
 
         return {access_token: token}
     }

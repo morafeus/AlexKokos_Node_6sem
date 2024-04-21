@@ -15,7 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
+const decorater_1 = require("./decorater");
 const dto_1 = require("./dto");
+const guard_1 = require("./guard");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -25,6 +27,13 @@ let AuthController = class AuthController {
     }
     signin(dto) {
         return this.authService.signin(dto);
+    }
+    teacher(dto, user) {
+        if (user.role == 'admin') {
+            return this.authService.createTeacher(dto);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
     }
 };
 exports.AuthController = AuthController;
@@ -42,6 +51,15 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.LoginDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signin", null);
+__decorate([
+    (0, common_1.Post)('teacher'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.TeacherDto, Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "teacher", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

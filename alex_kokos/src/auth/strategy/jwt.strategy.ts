@@ -15,7 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     }
 
     async validate(payload: {sub: number, fio: string}) {
-        console.log(payload.fio + ')))))))))))))))))))))0');
         if(payload.fio == 'admin')
         {
             const user = {user_ident: 0, fio: 'admin', role: 'admin'}
