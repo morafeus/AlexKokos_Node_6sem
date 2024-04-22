@@ -1,1 +1,8 @@
 export const ADMIN_ROUTE = '/admin'
+export const MAIN_ROUTE = '/main'
+export const MY_MAIN_ROUTE = '/mymain'
+export const LOGIN_ROUTE = '/login'
+export const REGESTRATE_ROUTE = '/registrate'
+export const COURSE_ROUTE = '/course'
+export const MY_COURSE_ROUTE = '/mycourse'
+export const MY_PROFILE = '/profile'

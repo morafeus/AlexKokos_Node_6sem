@@ -3,9 +3,9 @@ import React from "react";
 const MainPage = () => {
     return (
         <div>
-            MainPage
+            <h1>main</h1>
         </div>
-    )
-}
+    );
+};
 
 export default MainPage;
