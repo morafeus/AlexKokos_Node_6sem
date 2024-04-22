@@ -11,10 +11,6 @@ export declare class JwtStrategy extends JwtStrategy_base {
     }): Promise<{
         user_ident: number;
         fio: string;
-        role: string;
-    } | {
-        user_ident: number;
-        fio: string;
         email: string;
         user_password: string;
         descipline: string;
@@ -24,6 +20,10 @@ export declare class JwtStrategy extends JwtStrategy_base {
         balance: number;
         email: string;
         user_password: string;
+    } | {
+        user_ident: number;
+        fio: string;
+        role: string;
     }>;
 }
 export {};

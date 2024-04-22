@@ -73,7 +73,7 @@ model Teachers {
 }
 
 model TeacherToCourse {
-  TTC_id     Int      @id(map: "PK__TeacherT__1163A8111B983313")
+  TTC_id     Int      @id(map: "PK__TeacherT__1163A81115CC4E73") @default(autoincrement())
   teacher_id Int
   course_id  Int
   Courses    Courses  @relation(fields: [course_id], references: [course_id], onUpdate: NoAction, map: "FK__TeacherTo__cours__7E37BEF6")
