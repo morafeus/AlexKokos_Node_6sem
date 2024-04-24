@@ -25,8 +25,8 @@ let AuthController = class AuthController {
     signup(dto) {
         return this.authService.signup(dto);
     }
-    signin(dto) {
-        return this.authService.signin(dto);
+    signin(dto, res) {
+        return this.authService.signin(dto, res);
     }
     teacher(dto, user) {
         if (user.role == 'admin') {
@@ -47,8 +47,9 @@ __decorate([
 __decorate([
     (0, common_1.Post)('signin'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.LoginDto]),
+    __metadata("design:paramtypes", [dto_1.LoginDto, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signin", null);
 __decorate([

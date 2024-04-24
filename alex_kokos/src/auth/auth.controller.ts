@@ -1,9 +1,10 @@
-import { Body, Controller, ForbiddenException, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Post, UseGuards, Request, Res} from "@nestjs/common";
 import { dot } from "node:test/reporters";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorater";
 import { AuthDto, LoginDto, TeacherDto } from "./dto";
 import { JwtGuard } from "./guard";
+import { Response } from "express";
 
 @Controller('auth')
 export class AuthController{
@@ -15,8 +16,9 @@ export class AuthController{
     }
 
     @Post('signin')
-    signin(@Body() dto: LoginDto) {
-        return this.authService.signin(dto);
+    signin(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+        return this.authService.signin(dto, res);
+        
     }
 
     @Post('teacher')  

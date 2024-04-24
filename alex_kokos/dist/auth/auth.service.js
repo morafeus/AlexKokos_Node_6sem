@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -25,16 +28,16 @@ let AuthService = class AuthService {
     }
     async signup(dto) {
         const hash = await argon.hash(dto.password);
+        if (dto.login === 'admin')
+            throw new common_1.ForbiddenException('This login is already exist');
+        const teacher = await this.prisma.teachers.findFirst({
+            where: {
+                fio: dto.login,
+            },
+        });
+        if (teacher)
+            throw new common_1.ForbiddenException('This login is already exist');
         try {
-            if (dto.login === 'admin')
-                throw library_1.PrismaClientKnownRequestError;
-            const teacher = await this.prisma.teachers.findFirst({
-                where: {
-                    fio: dto.login,
-                },
-            });
-            if (teacher)
-                throw library_1.PrismaClientKnownRequestError;
             const user = await this.prisma.students.create({
                 data: {
                     fio: dto.login,
@@ -43,7 +46,6 @@ let AuthService = class AuthService {
                     user_password: hash
                 },
             });
-            return this.signToken(user.user_ident, user.fio);
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
@@ -53,9 +55,9 @@ let AuthService = class AuthService {
             throw Error();
         }
     }
-    async signin(dto) {
+    async signin(dto, res) {
         if (dto.login === 'admin' && dto.password === 'admin') {
-            return this.signToken(0, 'admin');
+            return this.signToken(0, 'admin', res);
         }
         const user = await this.prisma.students.findFirst({
             where: {
@@ -77,21 +79,21 @@ let AuthService = class AuthService {
         if (!pwMatches)
             throw new common_1.ForbiddenException('invalid password');
         if (user)
-            return this.signToken(user.user_ident, user.fio);
+            return this.signToken(user.user_ident, user.fio, res);
         else if (teacher)
-            return this.signToken(teacher.user_ident, teacher.fio);
+            return this.signToken(teacher.user_ident, teacher.fio, res);
     }
     async createTeacher(dto) {
+        if (dto.login === 'admin')
+            throw new common_1.ForbiddenException('This login is already exist');
+        const user = await this.prisma.students.findFirst({
+            where: {
+                fio: dto.login
+            }
+        });
+        if (user)
+            throw new common_1.ForbiddenException('This login is already exist');
         try {
-            if (dto.login === 'admin')
-                throw library_1.PrismaClientKnownRequestError;
-            const user = await this.prisma.students.findFirst({
-                where: {
-                    fio: dto.login
-                }
-            });
-            if (user)
-                throw library_1.PrismaClientKnownRequestError;
             const hash = await argon.hash(dto.password);
             const teacher = await this.prisma.teachers.create({
                 data: {
@@ -109,28 +111,34 @@ let AuthService = class AuthService {
                 if (error.code === 'P2002')
                     throw new common_1.ForbiddenException('This login is already exist');
             }
-            if (error instanceof common_1.ForbiddenException) {
-            }
             throw Error();
         }
     }
-    async signToken(userId, login) {
+    async signToken(userId, login, res) {
         const payload = {
             sub: userId,
             fio: login
         };
         const secret = this.config.get('JWT_SECRET');
         const token = await this.jwt.signAsync(payload, { expiresIn: '15m', secret: secret });
+        res.cookie('auth', token);
         return { access_token: token };
     }
 };
 exports.AuthService = AuthService;
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.LoginDto]),
+    __metadata("design:paramtypes", [dto_1.LoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthService.prototype, "signin", null);
+__decorate([
+    __param(2, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, Object]),
+    __metadata("design:returntype", Promise)
+], AuthService.prototype, "signToken", null);
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,

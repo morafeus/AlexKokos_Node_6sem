@@ -1,12 +1,11 @@
 import { AuthService } from "./auth.service";
 import { AuthDto, LoginDto, TeacherDto } from "./dto";
+import { Response } from "express";
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    signup(dto: AuthDto): Promise<{
-        access_token: string;
-    }>;
-    signin(dto: LoginDto): Promise<{
+    signup(dto: AuthDto): Promise<void>;
+    signin(dto: LoginDto, res: Response): Promise<{
         access_token: string;
     }>;
     teacher(dto: TeacherDto, user: {
