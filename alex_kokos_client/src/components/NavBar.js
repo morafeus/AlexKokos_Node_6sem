@@ -10,10 +10,12 @@ const NavBar =  observer(() => {
     return (
         <Navbar className="navbar navbar-expand-lg navbar-light bg-light">
             <NavLink className="navbar-brand mb-0 h1" to={MAIN_ROUTE}>AlexKokos</NavLink>
-            <div className="collapse navbar-collapse" id="navbarNav">
-                <ul className="navbar-nav">
+           
+                
                 {user.isAuth ? 
-                <nav>
+                 <div className="collapse navbar-collapse"  id="navbarNav">
+                <ul className="navbar-nav">
+                <nav className="navbar navbar-expand-lg">
                 <li className="nav-item active">
                     <Link className="nav-link" to={MAIN_ROUTE}>Home <span className="sr-only">(current)</span></Link>
                 </li>
@@ -24,19 +26,25 @@ const NavBar =  observer(() => {
                     <Link className="nav-link" to={MY_PROFILE}>Profile</Link>
                 </li>
                 </nav>
+                </ul>
+                </div>
                 :
+                <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav">
                 <nav>
                 <li className="nav-item active">
                     <Link className="nav-link" to={MAIN_ROUTE}>Home <span className="sr-only">(current)</span></Link>
                 </li>
                 </nav>
-                }
                 </ul>
-            </div>
+                </div>
+                }
+                
+            
             {user.isAuth ? 
                 <Button>LogOUT</Button>
                 :
-                <Button>LogIN</Button>
+                <Button onClick={() => user.setIsAuth(true)}>LogIN</Button>
             }
         </Navbar>
     )

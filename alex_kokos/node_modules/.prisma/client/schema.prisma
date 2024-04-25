@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Answers {
-  answer_id    Int    @id(map: "PK__Answers__337243185FF54BD7")
+  answer_id    Int    @id(map: "PK__Answers__33724318FAE76707")
   question     String @db.NVarChar(100)
   answers      String @db.NVarChar(300)
   answer_count Int
@@ -18,12 +18,12 @@ model Answers {
 }
 
 model Courses {
-  course_id          Int               @id(map: "PK__Courses__8F1EF7AE9F9E0BDF") @default(autoincrement())
+  course_id          Int               @id(map: "PK__Courses__8F1EF7AEA4509B9A") @default(autoincrement())
   course_name        String            @db.VarChar(100)
   course_cost        Int
   course_description String?           @db.VarChar(300)
-  course_descipline  String            @db.VarChar(100)
-  Desciplines        Desciplines       @relation(fields: [course_descipline], references: [descipline_name], onUpdate: NoAction, map: "FK__Courses__course___6754599E")
+  course_descipline  Int
+  Desciplines        Desciplines       @relation(fields: [course_descipline], references: [descipline_id], onUpdate: NoAction, map: "FK__Courses__course___6754599E")
   Materials          Materials[]
   StudentToCourse    StudentToCourse[]
   TeacherToCourse    TeacherToCourse[]
@@ -31,13 +31,14 @@ model Courses {
 }
 
 model Desciplines {
-  descipline_name String     @id(map: "PK__Descipli__27CA63071227075A") @db.VarChar(100)
+  descipline_id   Int        @id(map: "PK__Descipli__A0BD52159D412EF1") @default(autoincrement())
+  descipline_name String?    @db.VarChar(100)
   Courses         Courses[]
   Teachers        Teachers[]
 }
 
 model Materials {
-  material_id   Int     @id(map: "PK__Material__6BFE1D281F7F19F7") @default(autoincrement())
+  material_id   Int     @id(map: "PK__Material__6BFE1D28F9D64248") @default(autoincrement())
   material_name String  @db.NVarChar(100)
   course_id     Int
   material_ingo String? @db.VarChar(3000)
@@ -55,7 +56,7 @@ model Students {
 }
 
 model StudentToCourse {
-  STC_id     Int      @id(map: "PK__StudentT__482F14E6F439890D") @default(autoincrement())
+  STC_id     Int      @id(map: "PK__StudentT__482F14E6FFC08467") @default(autoincrement())
   course_id  Int
   student_id Int
   Courses    Courses  @relation(fields: [course_id], references: [course_id], onUpdate: NoAction, map: "FK__StudentTo__cours__797309D9")
@@ -63,17 +64,17 @@ model StudentToCourse {
 }
 
 model Teachers {
-  user_ident      Int               @id(map: "PK__Teachers__D39C7BF4EA6292A8") @default(autoincrement())
-  fio             String            @unique(map: "UQ__Teachers__D9908D6EAE22B41B") @db.NVarChar(100)
+  user_ident      Int               @id(map: "PK__Teachers__D39C7BF462FF74E5") @default(autoincrement())
+  fio             String            @unique(map: "UQ__Teachers__D9908D6E1D42BCFB") @db.NVarChar(100)
   email           String            @db.NVarChar(100)
   user_password   String            @db.NVarChar(100)
-  descipline      String            @db.VarChar(100)
-  Desciplines     Desciplines       @relation(fields: [descipline], references: [descipline_name], onUpdate: NoAction, map: "FK__Teachers__descip__6477ECF3")
+  descipline      Int
+  Desciplines     Desciplines       @relation(fields: [descipline], references: [descipline_id], onUpdate: NoAction, map: "FK__Teachers__descip__6477ECF3")
   TeacherToCourse TeacherToCourse[]
 }
 
 model TeacherToCourse {
-  TTC_id     Int      @id(map: "PK__TeacherT__1163A81115CC4E73") @default(autoincrement())
+  TTC_id     Int      @id(map: "PK__TeacherT__1163A8119BC4F2FE") @default(autoincrement())
   teacher_id Int
   course_id  Int
   Courses    Courses  @relation(fields: [course_id], references: [course_id], onUpdate: NoAction, map: "FK__TeacherTo__cours__7E37BEF6")
@@ -81,7 +82,7 @@ model TeacherToCourse {
 }
 
 model Tests {
-  test_id    Int          @id(map: "PK__Tests__F3FF1C026C7E674B") @default(autoincrement())
+  test_id    Int          @id(map: "PK__Tests__F3FF1C0279CEE78A") @default(autoincrement())
   test_name  String       @db.VarChar(50)
   test_desc  String       @db.VarChar(50)
   course_id  Int
@@ -91,7 +92,7 @@ model Tests {
 }
 
 model TestStatus {
-  status_id  Int      @id(map: "PK__TestStat__3683B53103B4DD19") @default(autoincrement())
+  status_id  Int      @id(map: "PK__TestStat__3683B5314B848A39") @default(autoincrement())
   test_id    Int
   student_id Int
   Students   Students @relation(fields: [student_id], references: [user_ident], onUpdate: NoAction, map: "FK__TestStatu__stude__02084FDA")
