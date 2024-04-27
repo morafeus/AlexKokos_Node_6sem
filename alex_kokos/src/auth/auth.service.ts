@@ -16,8 +16,9 @@ export class AuthService{
         private jwt: JwtService,
         private config: ConfigService) {}
 
-    async signup(dto: AuthDto) {
+    async signup(dto: AuthDto, @Res({ passthrough: true }) res: Response) {
         const hash = await argon.hash(dto.password);
+        console.log(dto.login);
       
         if(dto.login === 'admin')
             throw new ForbiddenException('This login is already exist');
@@ -39,7 +40,7 @@ export class AuthService{
                     user_password: hash
                 },
             })
-            //return this.signToken(user.user_ident, user.fio);
+            return this.signToken(user.user_ident, user.fio, res);
         }
         catch(error)
         {

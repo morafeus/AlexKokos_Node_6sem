@@ -1,6 +1,6 @@
 export declare class TeacherDto {
     login: string;
     email: string;
-    descipline: string;
+    descipline: number;
     password: string;
 }

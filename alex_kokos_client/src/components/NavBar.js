@@ -1,12 +1,14 @@
 import {React, useContext } from "react";
-import { NavLink, Link} from "react-router-dom";
+import { NavLink, Link, useNavigate} from "react-router-dom";
 import { Context } from "../index";
-import { MAIN_ROUTE, MY_MAIN_ROUTE, MY_PROFILE } from "../utils/consts";
+import { ADMIN_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, MY_MAIN_ROUTE, MY_PROFILE } from "../utils/consts";
 import {Button, Navbar} from 'react-bootstrap'
 import { observer } from "mobx-react-lite";
 
+
 const NavBar =  observer(() => {
     const {user} = useContext(Context)
+    const history = useNavigate();
     return (
         <Navbar className="navbar navbar-expand-lg navbar-light bg-light">
             <NavLink className="navbar-brand mb-0 h1" to={MAIN_ROUTE}>AlexKokos</NavLink>
@@ -42,7 +44,10 @@ const NavBar =  observer(() => {
                 
             
             {user.isAuth ? 
-                <Button>LogOUT</Button>
+                <nav>
+                    <Button variant={"outline_light"} onClick={() => history(ADMIN_ROUTE)}>Admin</Button>
+                    <Button className="m-1" onClick={() => history(LOGIN_ROUTE)}>LogOUT</Button>
+                </nav>
                 :
                 <Button onClick={() => user.setIsAuth(true)}>LogIN</Button>
             }

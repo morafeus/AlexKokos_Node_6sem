@@ -4,6 +4,7 @@ import Course from './pages/Course'
 import MainPage from './pages/MainPage'
 import My_main from './pages/My_main'
 import Profile from './pages/Profile'
+import MyCourse from './pages/MyCourse'
 import {ADMIN_ROUTE, MAIN_ROUTE, LOGIN_ROUTE, REGESTRATE_ROUTE, COURSE_ROUTE, MY_COURSE_ROUTE, MY_PROFILE, MY_MAIN_ROUTE} from './utils/consts'
 
 export const authRoutes = [
@@ -18,6 +19,10 @@ export const authRoutes = [
     {
         path: MY_PROFILE,
         Component: Profile
+    },
+    {
+        path: MY_COURSE_ROUTE,
+        Component: MyCourse
     },
 
 ]

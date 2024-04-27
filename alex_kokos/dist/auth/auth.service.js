@@ -26,8 +26,9 @@ let AuthService = class AuthService {
         this.jwt = jwt;
         this.config = config;
     }
-    async signup(dto) {
+    async signup(dto, res) {
         const hash = await argon.hash(dto.password);
+        console.log(dto.login);
         if (dto.login === 'admin')
             throw new common_1.ForbiddenException('This login is already exist');
         const teacher = await this.prisma.teachers.findFirst({
@@ -46,6 +47,7 @@ let AuthService = class AuthService {
                     user_password: hash
                 },
             });
+            return this.signToken(user.user_ident, user.fio, res);
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
@@ -126,6 +128,12 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
+__decorate([
+    __param(1, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [dto_1.AuthDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthService.prototype, "signup", null);
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(1, (0, common_1.Res)({ passthrough: true })),

@@ -4,7 +4,9 @@ import { Response } from "express";
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    signup(dto: AuthDto): Promise<void>;
+    signup(dto: AuthDto, res: Response): Promise<{
+        access_token: string;
+    }>;
     signin(dto: LoginDto, res: Response): Promise<{
         access_token: string;
     }>;
@@ -17,6 +19,6 @@ export declare class AuthController {
         fio: string;
         email: string;
         user_password: string;
-        descipline: string;
+        descipline: number;
     }>;
 }

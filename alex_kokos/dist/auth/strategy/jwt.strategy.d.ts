@@ -13,19 +13,19 @@ export declare class JwtStrategy extends JwtStrategy_base {
     }): Promise<{
         user_ident: number;
         fio: string;
-        role: string;
-    } | {
-        user_ident: number;
-        fio: string;
         email: string;
         user_password: string;
-        descipline: string;
+        descipline: number;
     } | {
         user_ident: number;
         fio: string;
         balance: number;
         email: string;
         user_password: string;
+    } | {
+        user_ident: number;
+        fio: string;
+        role: string;
     }>;
     static fromTokenAsCookies(req: Request): any;
 }

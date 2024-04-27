@@ -22,8 +22,8 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    signup(dto) {
-        return this.authService.signup(dto);
+    signup(dto, res) {
+        return this.authService.signup(dto, res);
     }
     signin(dto, res) {
         return this.authService.signin(dto, res);
@@ -40,8 +40,9 @@ exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('signup'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AuthDto]),
+    __metadata("design:paramtypes", [dto_1.AuthDto, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signup", null);
 __decorate([
