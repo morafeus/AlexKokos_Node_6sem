@@ -1,7 +1,7 @@
 import  { React,  useContext}  from "react";
 import {Route, Redirect, Routes, Navigate} from 'react-router-dom'
 import { Context } from "../index";
-import { authRoutes, publicRoutes } from "../routes";
+import { authRoutes, publicRoutes, adminRoutes } from "../routes";
 import { MAIN_ROUTE } from "../utils/consts";
 import { observer } from "mobx-react-lite";
 
@@ -11,6 +11,9 @@ const AppRouter = observer(() => {
     return (
         <div>
         <Routes>
+            {user._isAuth && user.user.fio === 'admin' && adminRoutes.map(({path, Component}) => 
+                <Route key = {path} path={path} Component={Component}/>
+            )}
             {user._isAuth && authRoutes.map(({path, Component}) => 
                 <Route key = {path} path={path} Component={Component}/>
             )}

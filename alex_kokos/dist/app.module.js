@@ -10,6 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./auth/auth.module");
+const courses_controller_1 = require("./courses/courses.controller");
 const prisma_module_1 = require("./prisma/prisma.module");
 const user_controller_1 = require("./user/user.controller");
 let AppModule = class AppModule {
@@ -22,7 +23,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             prisma_module_1.PrismaModule
         ],
-        controllers: [user_controller_1.UserController],
+        controllers: [user_controller_1.UserController, courses_controller_1.CoursesController],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

@@ -7,11 +7,14 @@ import Profile from './pages/Profile'
 import MyCourse from './pages/MyCourse'
 import {ADMIN_ROUTE, MAIN_ROUTE, LOGIN_ROUTE, REGESTRATE_ROUTE, COURSE_ROUTE, MY_COURSE_ROUTE, MY_PROFILE, MY_MAIN_ROUTE} from './utils/consts'
 
-export const authRoutes = [
+export const adminRoutes = [
     {
         path: ADMIN_ROUTE,
         Component: Admin
     },
+]
+
+export const authRoutes = [
     {
         path: MY_MAIN_ROUTE,
         Component: My_main
