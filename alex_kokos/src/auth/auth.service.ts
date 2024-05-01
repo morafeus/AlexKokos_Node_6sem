@@ -16,7 +16,7 @@ export class AuthService{
         private jwt: JwtService,
         private config: ConfigService) {}
 
-    async signup(dto: AuthDto, @Res({ passthrough: true }) res: Response) {
+    async signup(dto: AuthDto) {
         const hash = await argon.hash(dto.password);
         console.log(dto.login);
       
@@ -40,7 +40,15 @@ export class AuthService{
                     user_password: hash
                 },
             })
-            return this.signToken(user.user_ident, user.fio, res);
+            await this.prisma.forRefreshToken.create({
+                data: {
+                    user_ident: user.user_ident,
+                    user_role: 'student',
+                    refresh_token: null
+                },
+            })
+            delete user.user_password;
+            return user;
         }
         catch(error)
         {
@@ -55,10 +63,14 @@ export class AuthService{
     }
 
     @HttpCode(HttpStatus.OK)
-    async signin(dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    async signin(dto: LoginDto) {
+        var tokens;
         if(dto.login === 'admin' && dto.password === 'admin')
         {
-            return this.signToken(0, 'admin', res);
+            tokens = await this.signToken(0, 'admin', 'admin');
+            console.log(tokens);
+            await this.updateRt(0,'admin', tokens.refresh_token);
+            return tokens;
         }
 
         const user = await this.prisma.students.findFirst({
@@ -86,23 +98,46 @@ export class AuthService{
         if(!pwMatches)
             throw new ForbiddenException('invalid password');
         if(user)
-            return this.signToken(user.user_ident, user.fio, res);
+        {
+            tokens = await this.signToken(user.user_ident, user.fio,"student")
+            await this.updateRt(user.user_ident,'student', tokens.refresh_token);
+            return tokens ;
+        }
         else if(teacher)
-            return this.signToken(teacher.user_ident, teacher.fio, res);
+        {
+            tokens = await this.signToken(teacher.user_ident, teacher.fio,"teacher")
+            await this.updateRt(teacher.user_ident,'teacher', tokens.refresh_token);
+            return tokens;
+        }
+    }
+
+    async logout(userId: number, role: string) {
+        await this.prisma.forRefreshToken.updateMany({
+            where: {
+                indent: userId,
+                user_role: role,
+                refresh_token: {
+                    not: null
+                }
+            },
+            data: {
+                refresh_token: null
+            }
+        })
     }
 
     async createTeacher(dto:TeacherDto)
     {
       
-            if(dto.login === 'admin')
+        if(dto.login === 'admin')
+        throw new ForbiddenException('This login is already exist');
+        const user = await this.prisma.students.findFirst({
+            where: {
+                fio: dto.login
+            }
+        })
+        if(user)
             throw new ForbiddenException('This login is already exist');
-            const user = await this.prisma.students.findFirst({
-                where: {
-                    fio: dto.login
-                }
-            })
-            if(user)
-                throw new ForbiddenException('This login is already exist');
 
 
         try{
@@ -113,6 +148,13 @@ export class AuthService{
                     email: dto.email,
                     descipline: dto.descipline,
                     user_password: hash
+                },
+            })
+            await this.prisma.forRefreshToken.create({
+                data: {
+                    user_ident: teacher.user_ident,
+                    user_role: 'teacher',
+                    refresh_token: null
                 },
             })
             delete teacher.user_password;
@@ -130,16 +172,90 @@ export class AuthService{
         }
     }
     
-    async signToken(userId: number, login: string, @Res({ passthrough: true }) res: Response): Promise<{access_token: string}>
+    async signToken(userId: number, login: string, role: string): Promise<{access_token: string, refresh_token: string}>
     {
         const payload = {
             sub: userId,
-            fio: login
+            fio: login, 
+            role: role
         }
-        const secret = this.config.get('JWT_SECRET');
-        const token = await this.jwt.signAsync(payload, {expiresIn: '15m', secret: secret});
-        res.cookie('auth', token);
+        const [at, rt] = await Promise.all([
+            this.jwt.signAsync(payload, {
+                expiresIn: '15m',
+                secret: this.config.get('JWT_SECRET')
+            }),
+            this.jwt.signAsync(payload, {
+                expiresIn: '1d',
+                secret: this.config.get('RWT_SECRET')
+            }),
 
-        return {access_token: token}
+        ])
+        
+
+        return {
+            access_token: at,
+            refresh_token: rt 
+        };
+
     }
+
+    async updateRt(userId: number,role: string, refresh_token: string) {
+        await this.prisma.forRefreshToken.updateMany({
+            where: {
+                user_ident: userId,
+                user_role: role
+            },
+            data: {
+                refresh_token: refresh_token
+            }
+        })
+    }
+
+    async refreshTokens(userId: number,role: string, rt: string) {
+        const user= await this.prisma.forRefreshToken.findFirst({
+            where: {
+                user_ident: userId,
+                user_role: role
+            }
+        })
+
+        console.log(rt);
+        if(!user || !user.refresh_token)
+        {
+            throw new ForbiddenException('Refresh token incorrect');
+        }
+        if(user.refresh_token != rt)
+        {
+            throw new ForbiddenException('Refresh token incorrect');
+        }
+        var tokens;
+        if(role === 'teacher')
+        {
+            const teacher = await this.prisma.teachers.findFirst({
+                where: {
+                    user_ident: user.user_ident,
+                },
+            })
+            tokens = await this.signToken(teacher.user_ident, teacher.fio,"teacher")
+            await this.updateRt(teacher.user_ident,'teacher', tokens.refresh_token);
+        }
+        if(role === 'student')
+        {
+            const student = await this.prisma.students.findFirst({
+                where: {
+                    user_ident: user.user_ident,
+                },
+            })
+            tokens = await this.signToken(student.user_ident, student.fio,"student")
+            await this.updateRt(student.user_ident,'student', tokens.refresh_token);
+        }
+        if(role === 'admin')
+        {
+            tokens = await this.signToken(0, 'admin',"admin")
+            await this.updateRt(0,'admin', tokens.refresh_token);
+        }
+
+        return tokens
+    }    
+
 }

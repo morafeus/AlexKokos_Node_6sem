@@ -8,25 +8,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtStrategy = void 0;
+exports.RtJwtStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const prisma_service_1 = require("../../prisma/prisma.service");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt') {
+let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy, 'jwt-refresh') {
     constructor(config, prisma) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: config.get('JWT_SECRET'),
+            secretOrKey: config.get('RWT_SECRET'),
+            passReqToCallback: true,
         });
+        this.config = config;
         this.prisma = prisma;
     }
-    async validate(payload) {
+    async validate(req, payload) {
         var user;
         if (payload.fio == 'admin') {
             user = { user_ident: 0, fio: 'admin', role: 'admin' };
@@ -46,26 +45,16 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             });
         }
         user['role'] == payload.role;
-        return user;
-    }
-    static fromTokenAsCookies(req) {
-        if (req?.cookies) {
-            return req.cookies['auth'];
-        }
-        else {
-            return null;
-        }
+        const refreshToken = req.get('authorization').replace('Bearer', '').trim();
+        return {
+            ...user,
+            refreshToken
+        };
     }
 };
-exports.JwtStrategy = JwtStrategy;
-__decorate([
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], JwtStrategy, "fromTokenAsCookies", null);
-exports.JwtStrategy = JwtStrategy = __decorate([
+exports.RtJwtStrategy = RtJwtStrategy;
+exports.RtJwtStrategy = RtJwtStrategy = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [config_1.ConfigService, prisma_service_1.PrismaService])
-], JwtStrategy);
-//# sourceMappingURL=jwt.strategy.js.map
+], RtJwtStrategy);
+//# sourceMappingURL=refresh.strategy.js.map

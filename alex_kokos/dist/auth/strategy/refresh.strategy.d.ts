@@ -3,15 +3,15 @@ import { ConfigService } from "@nestjs/config";
 import { Strategy } from "passport-jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Request } from "express";
-declare const JwtStrategy_base: new (...args: any[]) => Strategy;
-export declare class JwtStrategy extends JwtStrategy_base {
+declare const RtJwtStrategy_base: new (...args: any[]) => Strategy;
+export declare class RtJwtStrategy extends RtJwtStrategy_base {
+    private config;
     private prisma;
     constructor(config: ConfigService, prisma: PrismaService);
-    validate(payload: {
+    validate(req: Request, payload: {
         sub: number;
         fio: string;
         role: string;
     }): Promise<any>;
-    static fromTokenAsCookies(req: Request): any;
 }
 export {};

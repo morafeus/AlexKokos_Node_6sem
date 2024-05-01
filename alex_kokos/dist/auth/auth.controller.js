@@ -22,11 +22,11 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    signup(dto, res) {
-        return this.authService.signup(dto, res);
+    signup(dto) {
+        return this.authService.signup(dto);
     }
-    signin(dto, res) {
-        return this.authService.signin(dto, res);
+    signin(dto) {
+        return this.authService.signin(dto);
     }
     teacher(dto, user) {
         if (user.role == 'admin') {
@@ -35,22 +35,27 @@ let AuthController = class AuthController {
         else
             throw new common_1.ForbiddenException('not enough privilege');
     }
+    refresh(req) {
+        console.log(req.user);
+        return this.authService.refreshTokens(req.user.user_ident, req.user.role, req.user.refreshToken);
+    }
+    logout(user) {
+        return this.authService.logout(user.id, user.role);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('signup'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AuthDto, Object]),
+    __metadata("design:paramtypes", [dto_1.AuthDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signup", null);
 __decorate([
     (0, common_1.Post)('signin'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.LoginDto, Object]),
+    __metadata("design:paramtypes", [dto_1.LoginDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signin", null);
 __decorate([
@@ -62,6 +67,22 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.TeacherDto, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "teacher", null);
+__decorate([
+    (0, common_1.Get)('refresh'),
+    (0, common_1.UseGuards)(guard_1.RtJwtGuard),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, common_1.Get)('logout'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

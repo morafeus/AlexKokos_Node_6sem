@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./auth/auth.module");
 const courses_controller_1 = require("./courses/courses.controller");
+const desciplines_module_1 = require("./desciplines/desciplines.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 const user_controller_1 = require("./user/user.controller");
 let AppModule = class AppModule {
@@ -21,7 +22,8 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             auth_module_1.AuthModule,
-            prisma_module_1.PrismaModule
+            prisma_module_1.PrismaModule,
+            desciplines_module_1.DesciplineModule
         ],
         controllers: [user_controller_1.UserController, courses_controller_1.CoursesController],
     })

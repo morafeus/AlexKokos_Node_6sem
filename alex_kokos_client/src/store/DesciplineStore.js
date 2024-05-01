@@ -2,11 +2,7 @@ import { makeAutoObservable, _allowStateChangesInsideComputed } from "mobx"
 
 export default class DesciplineStore {
     constructor () {
-        this._desciplines = [
-            { descipline_id: 1, descipline_name: 'Math'},
-            { descipline_id: 2, descipline_name: 'English'},
-            { descipline_id: 3, descipline_name: 'IT'},
-        ]
+        this._desciplines = []
        this._selectedType = {}
         makeAutoObservable(this);
     }

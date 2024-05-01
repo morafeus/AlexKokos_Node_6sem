@@ -1,23 +1,23 @@
-import { Body, Controller, ForbiddenException, Post, UseGuards, Request, Res} from "@nestjs/common";
+import { Body, Controller, ForbiddenException, Post, UseGuards,  Res, Get, Req} from "@nestjs/common";
 import { dot } from "node:test/reporters";
 import { AuthService } from "./auth.service";
 import { GetUser } from "./decorater";
 import { AuthDto, LoginDto, TeacherDto } from "./dto";
-import { JwtGuard } from "./guard";
-import { Response } from "express";
+import { JwtGuard, RtJwtGuard } from "./guard";
+import { Request, Response } from "express";
 
 @Controller('auth')
 export class AuthController{
     constructor(private authService: AuthService) {}
 
     @Post('signup')
-    signup(@Body() dto: AuthDto, @Res({ passthrough: true }) res: Response) {
-        return this.authService.signup(dto, res);
+    signup(@Body() dto: AuthDto) {
+        return this.authService.signup(dto);
     }
 
     @Post('signin')
-    signin(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-        return this.authService.signin(dto, res);
+    signin(@Body() dto: LoginDto) {
+        return this.authService.signin(dto);
         
     }
 
@@ -29,5 +29,20 @@ export class AuthController{
         }
         else
             throw new ForbiddenException('not enough privilege')
+    }
+
+    @Get('refresh')
+    @UseGuards(RtJwtGuard)
+    refresh(@Req() req )
+    {
+        console.log(req.user);
+        return this.authService.refreshTokens(req.user.user_ident, req.user.role, req.user.refreshToken)
+    }
+
+    @Get('logout')
+    @UseGuards(JwtGuard)
+    logout(@GetUser() user : {id: number, fio: string, role:string})
+    {
+        return this.authService.logout(user.id, user.role);
     }
 }

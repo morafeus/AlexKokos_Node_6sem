@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -26,7 +23,7 @@ let AuthService = class AuthService {
         this.jwt = jwt;
         this.config = config;
     }
-    async signup(dto, res) {
+    async signup(dto) {
         const hash = await argon.hash(dto.password);
         console.log(dto.login);
         if (dto.login === 'admin')
@@ -47,7 +44,15 @@ let AuthService = class AuthService {
                     user_password: hash
                 },
             });
-            return this.signToken(user.user_ident, user.fio, res);
+            await this.prisma.forRefreshToken.create({
+                data: {
+                    user_ident: user.user_ident,
+                    user_role: 'student',
+                    refresh_token: null
+                },
+            });
+            delete user.user_password;
+            return user;
         }
         catch (error) {
             if (error instanceof library_1.PrismaClientKnownRequestError) {
@@ -57,9 +62,13 @@ let AuthService = class AuthService {
             throw Error();
         }
     }
-    async signin(dto, res) {
+    async signin(dto) {
+        var tokens;
         if (dto.login === 'admin' && dto.password === 'admin') {
-            return this.signToken(0, 'admin', res);
+            tokens = await this.signToken(0, 'admin', 'admin');
+            console.log(tokens);
+            await this.updateRt(0, 'admin', tokens.refresh_token);
+            return tokens;
         }
         const user = await this.prisma.students.findFirst({
             where: {
@@ -80,10 +89,30 @@ let AuthService = class AuthService {
             pwMatches = await argon.verify(teacher.user_password, dto.password);
         if (!pwMatches)
             throw new common_1.ForbiddenException('invalid password');
-        if (user)
-            return this.signToken(user.user_ident, user.fio, res);
-        else if (teacher)
-            return this.signToken(teacher.user_ident, teacher.fio, res);
+        if (user) {
+            tokens = await this.signToken(user.user_ident, user.fio, "student");
+            await this.updateRt(user.user_ident, 'student', tokens.refresh_token);
+            return tokens;
+        }
+        else if (teacher) {
+            tokens = await this.signToken(teacher.user_ident, teacher.fio, "teacher");
+            await this.updateRt(teacher.user_ident, 'teacher', tokens.refresh_token);
+            return tokens;
+        }
+    }
+    async logout(userId, role) {
+        await this.prisma.forRefreshToken.updateMany({
+            where: {
+                indent: userId,
+                user_role: role,
+                refresh_token: {
+                    not: null
+                }
+            },
+            data: {
+                refresh_token: null
+            }
+        });
     }
     async createTeacher(dto) {
         if (dto.login === 'admin')
@@ -105,6 +134,13 @@ let AuthService = class AuthService {
                     user_password: hash
                 },
             });
+            await this.prisma.forRefreshToken.create({
+                data: {
+                    user_ident: teacher.user_ident,
+                    user_role: 'teacher',
+                    refresh_token: null
+                },
+            });
             delete teacher.user_password;
             return teacher;
         }
@@ -116,37 +152,85 @@ let AuthService = class AuthService {
             throw Error();
         }
     }
-    async signToken(userId, login, res) {
+    async signToken(userId, login, role) {
         const payload = {
             sub: userId,
-            fio: login
+            fio: login,
+            role: role
         };
-        const secret = this.config.get('JWT_SECRET');
-        const token = await this.jwt.signAsync(payload, { expiresIn: '15m', secret: secret });
-        res.cookie('auth', token);
-        return { access_token: token };
+        const [at, rt] = await Promise.all([
+            this.jwt.signAsync(payload, {
+                expiresIn: '15m',
+                secret: this.config.get('JWT_SECRET')
+            }),
+            this.jwt.signAsync(payload, {
+                expiresIn: '1d',
+                secret: this.config.get('RWT_SECRET')
+            }),
+        ]);
+        return {
+            access_token: at,
+            refresh_token: rt
+        };
+    }
+    async updateRt(userId, role, refresh_token) {
+        await this.prisma.forRefreshToken.updateMany({
+            where: {
+                user_ident: userId,
+                user_role: role
+            },
+            data: {
+                refresh_token: refresh_token
+            }
+        });
+    }
+    async refreshTokens(userId, role, rt) {
+        const user = await this.prisma.forRefreshToken.findFirst({
+            where: {
+                user_ident: userId,
+                user_role: role
+            }
+        });
+        console.log(rt);
+        if (!user || !user.refresh_token) {
+            throw new common_1.ForbiddenException('Refresh token incorrect');
+        }
+        if (user.refresh_token != rt) {
+            throw new common_1.ForbiddenException('Refresh token incorrect');
+        }
+        var tokens;
+        if (role === 'teacher') {
+            const teacher = await this.prisma.teachers.findFirst({
+                where: {
+                    user_ident: user.user_ident,
+                },
+            });
+            tokens = await this.signToken(teacher.user_ident, teacher.fio, "teacher");
+            await this.updateRt(teacher.user_ident, 'teacher', tokens.refresh_token);
+        }
+        if (role === 'student') {
+            const student = await this.prisma.students.findFirst({
+                where: {
+                    user_ident: user.user_ident,
+                },
+            });
+            tokens = await this.signToken(student.user_ident, student.fio, "student");
+            await this.updateRt(student.user_ident, 'student', tokens.refresh_token);
+        }
+        if (role === 'admin') {
+            tokens = await this.signToken(0, 'admin', "admin");
+            await this.updateRt(0, 'admin', tokens.refresh_token);
+        }
+        return tokens;
     }
 };
 exports.AuthService = AuthService;
 __decorate([
-    __param(1, (0, common_1.Res)({ passthrough: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AuthDto, Object]),
-    __metadata("design:returntype", Promise)
-], AuthService.prototype, "signup", null);
-__decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.LoginDto, Object]),
+    __metadata("design:paramtypes", [dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthService.prototype, "signin", null);
-__decorate([
-    __param(2, (0, common_1.Res)({ passthrough: true })),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, Object]),
-    __metadata("design:returntype", Promise)
-], AuthService.prototype, "signToken", null);
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,

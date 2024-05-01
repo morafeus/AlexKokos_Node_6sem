@@ -7,13 +7,7 @@ export const createDescipline = async (descipline) => {
 }
 
 export const fetchDesciplines = async (login, password) => {
-    const {data} = await $host.post('desciplines/main', {login, password})
-    localStorage.setItem('token', data.access_token);
-    return jwtDecode(data.access_token);
+    const {data} = await $authHost.get('desciplines/getall', {login, password})
+    return data;
 }
 
-export const check = async () => {
-    const {data} = await $authHost.get('auth/registration');
-    localStorage.setItem('token', data.access_token);
-    return jwtDecode(data.access_token);
-}

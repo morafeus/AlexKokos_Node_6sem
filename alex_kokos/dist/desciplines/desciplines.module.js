@@ -6,21 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthModule = void 0;
+exports.DesciplineModule = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
-const auth_controller_1 = require("./auth.controller");
-const auth_service_1 = require("./auth.service");
-const strategy_1 = require("./strategy");
-const refresh_strategy_1 = require("./strategy/refresh.strategy");
-let AuthModule = class AuthModule {
+const desciplines_controller_1 = require("./desciplines.controller");
+const desciplines_service_1 = require("./desciplines.service");
+let DesciplineModule = class DesciplineModule {
 };
-exports.AuthModule = AuthModule;
-exports.AuthModule = AuthModule = __decorate([
+exports.DesciplineModule = DesciplineModule;
+exports.DesciplineModule = DesciplineModule = __decorate([
     (0, common_1.Module)({
         imports: [jwt_1.JwtModule.register({})],
-        controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, strategy_1.JwtStrategy, refresh_strategy_1.RtJwtStrategy]
+        controllers: [desciplines_controller_1.DesciplinesController],
+        providers: [desciplines_service_1.DesciplineService]
     })
-], AuthModule);
-//# sourceMappingURL=auth.module.js.map
+], DesciplineModule);
+//# sourceMappingURL=desciplines.module.js.map

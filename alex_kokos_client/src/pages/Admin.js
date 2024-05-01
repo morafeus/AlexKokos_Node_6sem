@@ -17,7 +17,6 @@ const Admin = () => {
             <CreateDescipline show={desciplineVisible} onHide={() => setDesciplineVisible(false)}/>
             <CreateCourse show={courseVisible} onHide={() => setCourseVisible(false)}/>
             <CreateTeacher show={teacherVisible} onHide={() => setTeacherVisible(false)}/>
-          
         </Container>
     )
 }
