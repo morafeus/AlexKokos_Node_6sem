@@ -10,7 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./auth/auth.module");
-const courses_controller_1 = require("./courses/courses.controller");
+const courses_module_1 = require("./courses/courses.module");
 const desciplines_module_1 = require("./desciplines/desciplines.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 const user_controller_1 = require("./user/user.controller");
@@ -23,9 +23,10 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({ isGlobal: true }),
             auth_module_1.AuthModule,
             prisma_module_1.PrismaModule,
-            desciplines_module_1.DesciplineModule
+            desciplines_module_1.DesciplineModule,
+            courses_module_1.CoursesModule
         ],
-        controllers: [user_controller_1.UserController, courses_controller_1.CoursesController],
+        controllers: [user_controller_1.UserController],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

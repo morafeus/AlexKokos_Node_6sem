@@ -10,11 +10,6 @@ const App = observer(() => {
   const {user} = useContext(Context);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    check().then(data=> 
-      user.setUser(data),
-      user.setIsAuth(true))
-  }, [])
   
 
   return (

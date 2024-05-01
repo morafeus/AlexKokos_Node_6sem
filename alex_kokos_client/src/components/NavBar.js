@@ -4,15 +4,17 @@ import { Context } from "../index";
 import { ADMIN_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, MY_MAIN_ROUTE, MY_PROFILE } from "../utils/consts";
 import {Button, Navbar} from 'react-bootstrap'
 import { observer } from "mobx-react-lite";
+import { logoutFunc} from "../http/userAPI";
 
 
 const NavBar =  observer(() => {
     const {user} = useContext(Context)
     const history = useNavigate();
 
-    const logout = () => {
+    const logout =async () => {
         user.setIsAuth(false);
         user.setUser({});
+        await logoutFunc();
     }
 
     return (

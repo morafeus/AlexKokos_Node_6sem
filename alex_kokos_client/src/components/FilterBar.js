@@ -30,14 +30,7 @@ const FilterBar = observer(() => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        <Dropdown className="me-3">
-          <Dropdown.Toggle variant="white" id="dropdown-basic">
-            Popular
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item href="#action1">Before Popular</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        
         <Form inline className="d-flex">
           <Form.Control type="search" placeholder="Search" className="mr-sm-2" />
           <Button variant="outline-success" type="submit">

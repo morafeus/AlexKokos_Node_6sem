@@ -35,7 +35,6 @@ export class AuthController{
     @UseGuards(RtJwtGuard)
     refresh(@Req() req )
     {
-        console.log(req.user);
         return this.authService.refreshTokens(req.user.user_ident, req.user.role, req.user.refreshToken)
     }
 

@@ -15,7 +15,7 @@ export declare class AuthService {
         user_password: string;
     }>;
     signin(dto: LoginDto): Promise<any>;
-    logout(userId: number, role: string): Promise<void>;
+    logout(userId: number, role: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
     createTeacher(dto: TeacherDto): Promise<{
         user_ident: number;
         fio: string;

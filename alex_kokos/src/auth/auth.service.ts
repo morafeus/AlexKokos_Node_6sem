@@ -68,7 +68,6 @@ export class AuthService{
         if(dto.login === 'admin' && dto.password === 'admin')
         {
             tokens = await this.signToken(0, 'admin', 'admin');
-            console.log(tokens);
             await this.updateRt(0,'admin', tokens.refresh_token);
             return tokens;
         }
@@ -111,8 +110,9 @@ export class AuthService{
         }
     }
 
+    @HttpCode(HttpStatus.OK)
     async logout(userId: number, role: string) {
-        await this.prisma.forRefreshToken.updateMany({
+        const data  = await this.prisma.forRefreshToken.updateMany({
             where: {
                 indent: userId,
                 user_role: role,
@@ -124,6 +124,7 @@ export class AuthService{
                 refresh_token: null
             }
         })
+        return data;
     }
 
     async createTeacher(dto:TeacherDto)
@@ -219,7 +220,6 @@ export class AuthService{
             }
         })
 
-        console.log(rt);
         if(!user || !user.refresh_token)
         {
             throw new ForbiddenException('Refresh token incorrect');
@@ -252,9 +252,9 @@ export class AuthService{
         if(role === 'admin')
         {
             tokens = await this.signToken(0, 'admin',"admin")
+
             await this.updateRt(0,'admin', tokens.refresh_token);
         }
-
         return tokens
     }    
 

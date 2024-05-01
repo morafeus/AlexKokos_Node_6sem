@@ -36,7 +36,6 @@ let AuthController = class AuthController {
             throw new common_1.ForbiddenException('not enough privilege');
     }
     refresh(req) {
-        console.log(req.user);
         return this.authService.refreshTokens(req.user.user_ident, req.user.role, req.user.refreshToken);
     }
     logout(user) {

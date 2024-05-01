@@ -66,7 +66,6 @@ let AuthService = class AuthService {
         var tokens;
         if (dto.login === 'admin' && dto.password === 'admin') {
             tokens = await this.signToken(0, 'admin', 'admin');
-            console.log(tokens);
             await this.updateRt(0, 'admin', tokens.refresh_token);
             return tokens;
         }
@@ -101,7 +100,7 @@ let AuthService = class AuthService {
         }
     }
     async logout(userId, role) {
-        await this.prisma.forRefreshToken.updateMany({
+        const data = await this.prisma.forRefreshToken.updateMany({
             where: {
                 indent: userId,
                 user_role: role,
@@ -113,6 +112,7 @@ let AuthService = class AuthService {
                 refresh_token: null
             }
         });
+        return data;
     }
     async createTeacher(dto) {
         if (dto.login === 'admin')
@@ -191,7 +191,6 @@ let AuthService = class AuthService {
                 user_role: role
             }
         });
-        console.log(rt);
         if (!user || !user.refresh_token) {
             throw new common_1.ForbiddenException('Refresh token incorrect');
         }
@@ -231,6 +230,12 @@ __decorate([
     __metadata("design:paramtypes", [dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthService.prototype, "signin", null);
+__decorate([
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:returntype", Promise)
+], AuthService.prototype, "logout", null);
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,

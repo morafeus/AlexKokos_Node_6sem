@@ -15,31 +15,43 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CoursesController = void 0;
 const common_1 = require("@nestjs/common");
 const decorater_1 = require("../auth/decorater");
+const course_dto_1 = require("../auth/dto/course.dto");
 const guard_1 = require("../auth/guard");
+const courses_service_1 = require("./courses.service");
 let CoursesController = class CoursesController {
-    Main(user) {
-        return user;
+    constructor(courseService) {
+        this.courseService = courseService;
     }
-    editUser() {
+    GetAll(body) {
+        return this.courseService.getall(body.name, body.price, body.descipline, body.page, body.limit);
+    }
+    Create(dto, user) {
+        if (user.role === 'admin') {
+            return this.courseService.create(dto);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
     }
 };
 exports.CoursesController = CoursesController;
 __decorate([
-    (0, common_1.Get)('main'),
-    (0, common_1.UseGuards)(guard_1.JwtGuard),
-    __param(0, (0, decorater_1.GetUser)()),
+    (0, common_1.Get)('getall'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], CoursesController.prototype, "Main", null);
+], CoursesController.prototype, "GetAll", null);
 __decorate([
-    (0, common_1.Patch)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], CoursesController.prototype, "editUser", null);
-exports.CoursesController = CoursesController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
-    (0, common_1.Controller)('courses')
+    (0, common_1.Post)('create'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [course_dto_1.CourseDto, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "Create", null);
+exports.CoursesController = CoursesController = __decorate([
+    (0, common_1.Controller)('courses'),
+    __metadata("design:paramtypes", [courses_service_1.CourseService])
 ], CoursesController);
 //# sourceMappingURL=courses.controller.js.map

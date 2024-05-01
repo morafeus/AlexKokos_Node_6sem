@@ -27,5 +27,5 @@ export declare class AuthController {
         id: number;
         fio: string;
         role: string;
-    }): Promise<void>;
+    }): Promise<import(".prisma/client").Prisma.BatchPayload>;
 }
