@@ -23,7 +23,14 @@ let CoursesController = class CoursesController {
         this.courseService = courseService;
     }
     GetAll(body) {
+        console.log(body.price);
         return this.courseService.getall(body.name, body.price, body.descipline, body.page, body.limit);
+    }
+    GetOne(id) {
+        return this.courseService.getOne(id);
+    }
+    GetAllUser(body) {
+        return this.courseService.getallUser(body.name, body.price, body.descipline, body.page, body.limit, body.user, body.role);
     }
     Create(dto, user) {
         if (user.role === 'admin') {
@@ -42,8 +49,23 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "GetAll", null);
 __decorate([
+    (0, common_1.Get)('getone/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetOne", null);
+__decorate([
+    (0, common_1.Get)('getallUser'),
     (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetAllUser", null);
+__decorate([
     (0, common_1.Post)('create'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, decorater_1.GetUser)()),
     __metadata("design:type", Function),

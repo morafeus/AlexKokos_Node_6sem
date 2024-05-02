@@ -8,9 +8,26 @@ import { check } from "./http/userAPI";
 
 const App = observer(() => {
   const {user} = useContext(Context);
-  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+      
+      async function startFetching() {
+        user.setUser(true); 
+        const data = await check().then(data => {
+          if (!ignore && data) {
+            user.setUser(data);
+            user.setIsAuth(true);
+          }
+        })
+       
+      }
   
+      let ignore = false;
+      startFetching();
+      return () => {
+        ignore = true;
+      }
+  }, [])
 
   return (
     <BrowserRouter >

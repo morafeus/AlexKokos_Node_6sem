@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Card, Button, Row, Col, ListGroup, ListGroupItem} from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import { fetchCourses, fetchOneCourse } from "../http/courseAPI";
 
 const Course = () => {
-    const course = {  course_id : 1,course_name: 'math', course_cost: 300, course_description: 'hello course', course_descipline: 'Math'}
-    const teacher = {user_ident: 1, fio: "alex", email:"teacher@gmail.com", descipline: "Math"}
-    const tests = [
-        {  test_id : 1,test_name: 'math', course_cost: 300, test_desc: 'hello course', course_descipline: 'Math'},
-        {  test_id : 2,test_name: 'math1', course_cost: 100, test_desc: 'hello course', course_descipline: 'Math'},
-        {  test_id : 3,test_name: 'math2', course_cost: 700, test_desc: 'hello course', course_descipline: 'Math'},
-        {  test_id : 4,test_name: 'math3', course_cost: 400, test_desc: 'hello course', course_descipline: 'Math'},
-    ] 
+    const [course, setCourse] = useState({})
+    const params = useParams();
+    useEffect(() => {
+        fetchOneCourse(params.id).then(data => setCourse(data))
+ 
+    }, []);
+
     return (
         <Container className="mt-3" >
             <Row>
@@ -26,8 +27,8 @@ const Course = () => {
                 <Col md={5} >
                     <Card className="m-1">
                         <Card.Body>
-                            <Card.Title>{teacher.fio}</Card.Title>
-                            <Card.Text className="align-left">{teacher.descipline}</Card.Text>
+                        <Card.Title>{course.TeacherToCourse && course.TeacherToCourse[0]?.Teachers.fio}</Card.Title>
+                        <Card.Text className="align-left">{course.TeacherToCourse && course.TeacherToCourse[0]?.Teachers.Desciplines?.descipline_name}</Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -35,11 +36,11 @@ const Course = () => {
                     <Card className="m-1 d-flex-column">
                         <Card.Title className="m-2">Test List:</Card.Title>
                         <Card.Body>
-                            {tests.map((test, index) => 
-                                <Row key={test.test_id} style={{background: index % 2 === 0 ? '#f8f9fa' : 'transparent', padding: 1}} >
-                                    {test.test_name} : {test.test_desc}
-                                </Row>
-                            )}
+                        {course.Tests && course.Tests.map((test, index) => 
+                        <Row key={test.test_id} style={{background: index % 2 === 0 ? '#f8f9fa' : 'transparent', padding: 1}}>
+                            {test.test_name} : {test.test_desc}
+                        </Row>
+                        )}
                         </Card.Body>
                     </Card>
                 </Col>

@@ -10,6 +10,37 @@ export declare class CoursesController {
         page: number;
         limit: number;
     }): Promise<any>;
+    GetOne(id: any): Promise<{
+        course_id: number;
+        course_name: string;
+        course_cost: number;
+        course_description: string;
+        Desciplines: {
+            descipline_name: string;
+        };
+        TeacherToCourse: {
+            Teachers: {
+                Desciplines: {
+                    descipline_name: string;
+                };
+                fio: string;
+            };
+        }[];
+        Tests: {
+            test_id: number;
+            test_name: string;
+            test_desc: string;
+        }[];
+    }>;
+    GetAllUser(body: {
+        name: string;
+        price: number;
+        descipline: number;
+        page: number;
+        limit: number;
+        user: number;
+        role: string;
+    }): Promise<any>;
     Create(dto: CourseDto, user: {
         id: number;
         fio: string;

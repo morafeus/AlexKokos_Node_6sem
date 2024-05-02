@@ -19,7 +19,6 @@ const authInterceptor = config => {
 
 const refreshInterceptor = config => {
     config.headers.authorization = `Bearer ${localStorage.getItem('refresh-token')}`
-    console.log(localStorage.getItem('refresh-token'));
     return config
 }
 

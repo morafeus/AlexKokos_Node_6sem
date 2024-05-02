@@ -21,9 +21,9 @@ root.render(
     teachers: new TeachersStore(),
     tests: new TestStore()
   }}>
-    <React.StrictMode>
+  
       <App />
-    </React.StrictMode>
+   
   </Context.Provider>,
 );
 

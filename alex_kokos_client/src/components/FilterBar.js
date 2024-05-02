@@ -5,7 +5,6 @@ import { Context } from '../index';
 
 const FilterBar = observer(() => {
   const { descipline } = useContext(Context);
-  console.log(descipline.selectedType)
   return (
     <Container className="mt-3 justify-content-center align-items-center">
       <Navbar   className="navbar navbar-expand-lg navbar-light bg-light">

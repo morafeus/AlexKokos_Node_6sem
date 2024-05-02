@@ -19,7 +19,7 @@ const CourseItem = ({course}) =>{
                     
                             <div className="row justify-content-end">
                             <p className="card-link text-info col-2">Cost: {course.course_cost}</p>
-                            <p className="card-link text col-2">Discipline: {course.course_descipline}</p>
+                            <p className="card-link text col-3">Discipline: {course.Desciplines.descipline_name}</p>
                             </div>
 
                     </Card.Body>

@@ -23,7 +23,6 @@ const Auth = observer(() => {
             if(isLogin)
             {
                 data = await signin(login, password);
-                console.log(data);
                 user.setUser(data);
                 user.setIsAuth(true);
                 history(MAIN_ROUTE);
