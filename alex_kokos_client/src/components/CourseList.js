@@ -6,7 +6,6 @@ import CourseItem from './CourseItem';
 
 const CourseList = observer(() =>{
     const {courses} = useContext(Context);
-    console.log(courses);
     return (
         <Row className='d-flex'>
             {courses.courses.map(course => 

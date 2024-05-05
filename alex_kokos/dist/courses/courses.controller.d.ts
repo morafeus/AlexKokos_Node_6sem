@@ -9,7 +9,10 @@ export declare class CoursesController {
         descipline: number;
         page: number;
         limit: number;
-    }): Promise<any>;
+    }): Promise<{
+        courses: any;
+        count: any;
+    }>;
     GetOne(id: any): Promise<{
         course_id: number;
         course_name: string;
@@ -51,5 +54,19 @@ export declare class CoursesController {
         course_cost: number;
         course_description: string;
         course_descipline: number;
+    }>;
+    BuyCourse({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        STC_id: number;
+        course_id: number;
+        student_id: number;
+    }>;
+    CheckIsMy({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        STC_id: number;
+        course_id: number;
+        student_id: number;
     }>;
 }

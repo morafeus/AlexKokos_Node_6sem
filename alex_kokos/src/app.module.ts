@@ -6,6 +6,7 @@ import { CoursesModule } from './courses/courses.module';
 import { DesciplineModule } from './desciplines/desciplines.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserController } from './user/user.controller';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -14,8 +15,8 @@ import { UserController } from './user/user.controller';
     AuthModule,
     PrismaModule,
     DesciplineModule,
-    CoursesModule
+    CoursesModule,
+    UserModule
   ],
-  controllers: [UserController],
 })
 export class AppModule {}

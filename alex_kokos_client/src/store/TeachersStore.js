@@ -3,13 +3,24 @@ import { makeAutoObservable } from "mobx"
 export default class TeachersStore {
     constructor () {
         this._teachers = [
-           {user_ident: 1, fio: "alex", email:"teacher@gmail.com", descipline: "Math"}
         ] 
+        this._selectedType = {}
         makeAutoObservable(this);
     }
 
+    setSelectedType(type){
+
+        this._selectedType = type;
+   }
+
+
     setTeachers(teachers){
         this._teachers = teachers;
+    }
+
+
+    get selectedType(){
+        return this._selectedType;
     }
 
     get teachers() {

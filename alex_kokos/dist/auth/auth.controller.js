@@ -29,6 +29,7 @@ let AuthController = class AuthController {
         return this.authService.signin(dto);
     }
     teacher(dto, user) {
+        console.log(dto);
         if (user.role == 'admin') {
             return this.authService.createTeacher(dto);
         }

@@ -9,49 +9,63 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DesciplineService = void 0;
+exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
-const dto_1 = require("../auth/dto");
-let DesciplineService = class DesciplineService {
+let UserService = class UserService {
     constructor(prisma, jwt, config) {
         this.prisma = prisma;
         this.jwt = jwt;
         this.config = config;
     }
-    async getall() {
+    async getallTeachers() {
         const descplines = this.prisma.desciplines.findMany();
         return descplines;
     }
-    async create(dto) {
-        const descipline = await this.prisma.desciplines.findFirst({
+    async getallTeachersDesc(id) {
+        const teachers = await this.prisma.teachers.findMany({
+            select: {
+                user_ident: true,
+                fio: true,
+                descipline: true
+            },
             where: {
-                descipline_name: dto.descipline_name
+                descipline: +id - 1
             }
         });
-        if (descipline)
-            throw new common_1.ForbiddenException("this desciplint is already exist");
-        let descipline_new = await this.prisma.desciplines.create({
+        return teachers;
+    }
+    async getStud(id) {
+        const user = await this.prisma.students.findFirst({
+            where: {
+                user_ident: id
+            }
+        });
+        delete user.user_password;
+        return user;
+    }
+    async UpdateBalance(summ, id) {
+        const user = await this.prisma.students.update({
+            where: {
+                user_ident: id
+            },
             data: {
-                descipline_name: dto.descipline_name
+                balance: {
+                    increment: +summ
+                }
             }
         });
-        return descipline_new;
+        console.log(user);
+        return user;
     }
 };
-exports.DesciplineService = DesciplineService;
-__decorate([
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.DesciplineDto]),
-    __metadata("design:returntype", Promise)
-], DesciplineService.prototype, "create", null);
-exports.DesciplineService = DesciplineService = __decorate([
+exports.UserService = UserService;
+exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,
         config_1.ConfigService])
-], DesciplineService);
-//# sourceMappingURL=desciplines.service.js.map
+], UserService);
+//# sourceMappingURL=user.service.js.map

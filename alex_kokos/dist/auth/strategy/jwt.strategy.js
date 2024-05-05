@@ -37,6 +37,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
                     fio: payload.fio
                 }
             });
+            user['role'] = payload.role;
         }
         if (payload.role == 'student') {
             user = await this.prisma.students.findFirst({
@@ -44,8 +45,8 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
                     fio: payload.fio
                 }
             });
+            user['role'] = payload.role;
         }
-        user['role'] == payload.role;
         return user;
     }
     static fromTokenAsCookies(req) {

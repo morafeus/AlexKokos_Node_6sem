@@ -11,7 +11,7 @@ import { CourseService } from './courses.service';
 export class CoursesController {
     constructor(private courseService: CourseService) {}
     
-    @Get('getall')
+    @Post('getall')
     GetAll(@Body() body : {name: string, price: number, descipline: number, page: number, limit: number}) {
         console.log(body.price)
         return this.courseService.getall(body.name, body.price, body.descipline,  body.page, body.limit)
@@ -31,10 +31,32 @@ export class CoursesController {
 
     @Post('create')
     @UseGuards(JwtGuard)
-    Create(@Body() dto : CourseDto, @GetUser() user : {id: number, fio: string, role:string}) {
+    Create(@Body() dto :CourseDto , @GetUser() user : {id: number, fio: string, role:string}) {
         if(user.role === 'admin')
         {
             return this.courseService.create(dto);
+        }
+        else
+            throw new ForbiddenException('not enough privilege')
+    }
+
+    @Post('buy')
+    @UseGuards(JwtGuard)
+    BuyCourse(@Body() {id}, @GetUser() user) {
+        if(user.role === 'student')
+        {
+            return this.courseService.buyCourse(id, user.user_ident);
+        }
+        else
+            throw new ForbiddenException('not enough privilege')
+    }
+
+    @Post('checkIsMy')
+    @UseGuards(JwtGuard)
+    CheckIsMy(@Body() {id}, @GetUser() user) {
+        if(user.role === 'student')
+        {
+            return this.courseService.checkIsMy(id, user.user_ident);
         }
         else
             throw new ForbiddenException('not enough privilege')

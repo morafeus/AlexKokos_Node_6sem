@@ -115,11 +115,11 @@ let AuthService = class AuthService {
         return data;
     }
     async createTeacher(dto) {
-        if (dto.login === 'admin')
+        if (dto.fio === 'admin')
             throw new common_1.ForbiddenException('This login is already exist');
         const user = await this.prisma.students.findFirst({
             where: {
-                fio: dto.login
+                fio: dto.fio
             }
         });
         if (user)
@@ -128,9 +128,9 @@ let AuthService = class AuthService {
             const hash = await argon.hash(dto.password);
             const teacher = await this.prisma.teachers.create({
                 data: {
-                    fio: dto.login,
+                    fio: dto.fio,
                     email: dto.email,
-                    descipline: dto.descipline,
+                    descipline: +dto.descipline,
                     user_password: hash
                 },
             });
@@ -198,7 +198,7 @@ let AuthService = class AuthService {
             throw new common_1.ForbiddenException('Refresh token incorrect');
         }
         var tokens;
-        if (role === 'teacher') {
+        if (user.user_role === 'teacher') {
             const teacher = await this.prisma.teachers.findFirst({
                 where: {
                     user_ident: user.user_ident,
@@ -207,7 +207,7 @@ let AuthService = class AuthService {
             tokens = await this.signToken(teacher.user_ident, teacher.fio, "teacher");
             await this.updateRt(teacher.user_ident, 'teacher', tokens.refresh_token);
         }
-        if (role === 'student') {
+        if (user.user_role === 'student') {
             const student = await this.prisma.students.findFirst({
                 where: {
                     user_ident: user.user_ident,
@@ -216,7 +216,7 @@ let AuthService = class AuthService {
             tokens = await this.signToken(student.user_ident, student.fio, "student");
             await this.updateRt(student.user_ident, 'student', tokens.refresh_token);
         }
-        if (role === 'admin') {
+        if (user.user_role === 'admin') {
             tokens = await this.signToken(0, 'admin', "admin");
             await this.updateRt(0, 'admin', tokens.refresh_token);
         }

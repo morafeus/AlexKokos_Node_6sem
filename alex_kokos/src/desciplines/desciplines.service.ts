@@ -20,7 +20,6 @@ export class DesciplineService{
 
     @HttpCode(HttpStatus.OK)
     async create(dto: DesciplineDto) {
-        console.log(dto.descipline_name)
         const descipline = await this.prisma.desciplines.findFirst({
             where:{
                 descipline_name: dto.descipline_name
@@ -34,12 +33,10 @@ export class DesciplineService{
                 descipline_name: dto.descipline_name
             }
         })
-        return descipline_new;
-    
-    
-           
-        
+        return descipline_new;  
     }
+
+   
     
 
 }

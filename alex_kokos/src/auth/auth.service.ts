@@ -129,12 +129,12 @@ export class AuthService{
 
     async createTeacher(dto:TeacherDto)
     {
-      
-        if(dto.login === 'admin')
+     
+        if(dto.fio === 'admin')
         throw new ForbiddenException('This login is already exist');
         const user = await this.prisma.students.findFirst({
             where: {
-                fio: dto.login
+                fio: dto.fio
             }
         })
         if(user)
@@ -145,9 +145,9 @@ export class AuthService{
             const hash = await argon.hash(dto.password);
             const teacher = await this.prisma.teachers.create({
                 data: {
-                    fio: dto.login,
+                    fio: dto.fio,
                     email: dto.email,
-                    descipline: dto.descipline,
+                    descipline: +dto.descipline,
                     user_password: hash
                 },
             })
@@ -219,6 +219,7 @@ export class AuthService{
                 user_role: role
             }
         })
+     
 
         if(!user || !user.refresh_token)
         {
@@ -229,7 +230,7 @@ export class AuthService{
             throw new ForbiddenException('Refresh token incorrect');
         }
         var tokens;
-        if(role === 'teacher')
+        if(user.user_role === 'teacher')
         {
             const teacher = await this.prisma.teachers.findFirst({
                 where: {
@@ -239,7 +240,7 @@ export class AuthService{
             tokens = await this.signToken(teacher.user_ident, teacher.fio,"teacher")
             await this.updateRt(teacher.user_ident,'teacher', tokens.refresh_token);
         }
-        if(role === 'student')
+        if(user.user_role === 'student')
         {
             const student = await this.prisma.students.findFirst({
                 where: {
@@ -249,7 +250,7 @@ export class AuthService{
             tokens = await this.signToken(student.user_ident, student.fio,"student")
             await this.updateRt(student.user_ident,'student', tokens.refresh_token);
         }
-        if(role === 'admin')
+        if(user.user_role === 'admin')
         {
             tokens = await this.signToken(0, 'admin',"admin")
 

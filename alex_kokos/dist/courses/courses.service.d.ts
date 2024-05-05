@@ -7,7 +7,10 @@ export declare class CourseService {
     private jwt;
     private config;
     constructor(prisma: PrismaService, jwt: JwtService, config: ConfigService);
-    getall(name: any, price: any, descipline: any, page: any, limit: any): Promise<any>;
+    getall(name: any, price: any, descipline: any, page: any, limit: any): Promise<{
+        courses: any;
+        count: any;
+    }>;
     getallUser(name: any, price: any, descipline: any, page: any, limit: any, user: any, role: any): Promise<any>;
     getOne(id: number): Promise<{
         course_id: number;
@@ -37,5 +40,15 @@ export declare class CourseService {
         course_cost: number;
         course_description: string;
         course_descipline: number;
+    }>;
+    buyCourse(course_id: any, user_id: any): Promise<{
+        STC_id: number;
+        course_id: number;
+        student_id: number;
+    }>;
+    checkIsMy(course_id: any, user_id: any): Promise<{
+        STC_id: number;
+        course_id: number;
+        student_id: number;
     }>;
 }

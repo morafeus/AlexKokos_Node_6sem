@@ -3,4 +3,5 @@ export declare class CourseDto {
     cost: number;
     description: string;
     descipline: number;
+    teacher: number;
 }

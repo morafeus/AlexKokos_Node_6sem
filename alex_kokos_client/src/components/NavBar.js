@@ -50,13 +50,14 @@ const NavBar =  observer(() => {
                     </li>
                     </nav>
                 }
-                {user.user.role == 'admin' | !user.isAuth && 
+                {user.user.role == 'admin' && 
                     <nav className="navbar navbar-expand-lg">
                         <li className="nav-item active">
                             <Link className="nav-link" to={MAIN_ROUTE}>Home <span className="sr-only">(current)</span></Link>
                         </li>
                     </nav>
                 }
+          
                 
                 </ul>
                 </div>

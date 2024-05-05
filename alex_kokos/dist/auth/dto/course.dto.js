@@ -34,4 +34,9 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], CourseDto.prototype, "descipline", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CourseDto.prototype, "teacher", void 0);
 //# sourceMappingURL=course.dto.js.map

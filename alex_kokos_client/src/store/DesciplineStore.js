@@ -8,6 +8,7 @@ export default class DesciplineStore {
     }
 
    setSelectedType(type){
+
         this._selectedType = type;
    }
 

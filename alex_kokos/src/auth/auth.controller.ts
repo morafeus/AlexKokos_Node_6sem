@@ -24,6 +24,7 @@ export class AuthController{
     @Post('teacher')  
     @UseGuards(JwtGuard)
     teacher(@Body() dto: TeacherDto, @GetUser() user : {id: number, fio: string, role:string}){
+        console.log(dto);
         if(user.role == 'admin'){
             return this.authService.createTeacher(dto);
         }

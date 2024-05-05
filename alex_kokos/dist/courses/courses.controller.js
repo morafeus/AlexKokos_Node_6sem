@@ -39,10 +39,24 @@ let CoursesController = class CoursesController {
         else
             throw new common_1.ForbiddenException('not enough privilege');
     }
+    BuyCourse({ id }, user) {
+        if (user.role === 'student') {
+            return this.courseService.buyCourse(id, user.user_ident);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    CheckIsMy({ id }, user) {
+        if (user.role === 'student') {
+            return this.courseService.checkIsMy(id, user.user_ident);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
 };
 exports.CoursesController = CoursesController;
 __decorate([
-    (0, common_1.Get)('getall'),
+    (0, common_1.Post)('getall'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -72,6 +86,24 @@ __decorate([
     __metadata("design:paramtypes", [course_dto_1.CourseDto, Object]),
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "Create", null);
+__decorate([
+    (0, common_1.Post)('buy'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "BuyCourse", null);
+__decorate([
+    (0, common_1.Post)('checkIsMy'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "CheckIsMy", null);
 exports.CoursesController = CoursesController = __decorate([
     (0, common_1.Controller)('courses'),
     __metadata("design:paramtypes", [courses_service_1.CourseService])

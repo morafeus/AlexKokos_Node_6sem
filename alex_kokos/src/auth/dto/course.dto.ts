@@ -16,4 +16,8 @@ export class CourseDto {
     @IsNotEmpty()
     @IsNumber()
     descipline: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    teacher: number;
 }

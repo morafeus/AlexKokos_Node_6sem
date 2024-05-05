@@ -16,11 +16,32 @@ exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const decorater_1 = require("../auth/decorater");
 const guard_1 = require("../auth/guard");
+const user_service_1 = require("./user.service");
 let UserController = class UserController {
+    constructor(userService) {
+        this.userService = userService;
+    }
     getMe(user) {
         return user;
     }
-    editUser() {
+    getTeacherDesc(desc) {
+        return this.userService.getallTeachersDesc(desc);
+    }
+    getStudent(user) {
+        console.log(user.id);
+        if (user.role === 'student') {
+            return this.userService.getStud(user.id);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    UpdateBalance({ balance }, user) {
+        console.log(user.user_ident);
+        if (user.role === 'student') {
+            return this.userService.UpdateBalance(balance, user.user_ident);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
     }
 };
 exports.UserController = UserController;
@@ -32,13 +53,30 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getMe", null);
 __decorate([
-    (0, common_1.Patch)(),
+    (0, common_1.Get)('getTeacherDesc/:desc'),
+    __param(0, (0, common_1.Param)('desc')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], UserController.prototype, "editUser", null);
+], UserController.prototype, "getTeacherDesc", null);
+__decorate([
+    (0, common_1.Get)('getStudent'),
+    __param(0, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "getStudent", null);
+__decorate([
+    (0, common_1.Post)('balance'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "UpdateBalance", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
-    (0, common_1.Controller)('users')
+    (0, common_1.Controller)('users'),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

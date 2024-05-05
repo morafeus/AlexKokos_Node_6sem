@@ -29,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
                     fio: payload.fio
                 }
             })
+            user['role'] = payload.role;
         }
 
         if(payload.role == 'student') {
@@ -37,9 +38,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
                     fio: payload.fio
                 }
             })
+            user['role'] = payload.role;
         } 
-        user['role'] == payload.role;
-
         return user;
 
         

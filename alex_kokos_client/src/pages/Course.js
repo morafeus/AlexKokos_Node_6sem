@@ -1,15 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container, Card, Button, Row, Col, ListGroup, ListGroupItem} from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { fetchCourses, fetchOneCourse } from "../http/courseAPI";
+import { Context } from "..";
+import { buyCourse, checkIsMy, fetchCourses, fetchOneCourse } from "../http/courseAPI";
 
 const Course = () => {
+    const {user} = useContext(Context);
     const [course, setCourse] = useState({})
+    const [check, setCheck] = useState(0)
     const params = useParams();
     useEffect(() => {
+        try{
         fetchOneCourse(params.id).then(data => setCourse(data))
- 
+        checkIsMy(params.id).then(data => {
+            if(data.data.course_id == params.id)
+            setCheck(1)
+        })
+        }
+        catch(e){
+            console.log(e);
+        }
     }, []);
+
+    const buyNew = () => {
+        try
+        {
+            buyCourse(course.course_id)
+            setCheck(1)
+
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
 
     return (
         <Container className="mt-3" >
@@ -45,12 +68,17 @@ const Course = () => {
                     </Card>
                 </Col>
             </Row>
+            {user.user.role == 'student' && check === 0 && 
             <Row className="align-items-end">
                 <Container className="d-flex justify-content-end align-items-center">
                     <lable className="mr-2" style={{fontSize:25}}>Cost: {course.course_cost}</lable>
-                    <Button>Buy</Button>
+              
+                        <Button onClick={() => buyNew()}>Buy</Button>
+                    
                 </Container>
             </Row>
+            }
+          
             
         </Container>
     )
