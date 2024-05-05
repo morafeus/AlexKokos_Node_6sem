@@ -36,6 +36,7 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
                     fio: payload.fio
                 }
             });
+            user['role'] = payload.role;
         }
         if (payload.role == 'student') {
             user = await this.prisma.students.findFirst({
@@ -43,8 +44,8 @@ let RtJwtStrategy = class RtJwtStrategy extends (0, passport_1.PassportStrategy)
                     fio: payload.fio
                 }
             });
+            user['role'] = payload.role;
         }
-        user['role'] == payload.role;
         const refreshToken = req.get('authorization').replace('Bearer', '').trim();
         return {
             ...user,

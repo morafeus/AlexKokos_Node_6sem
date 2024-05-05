@@ -29,12 +29,27 @@ let CoursesController = class CoursesController {
     GetOne(id) {
         return this.courseService.getOne(id);
     }
-    GetAllUser(body) {
-        return this.courseService.getallUser(body.name, body.price, body.descipline, body.page, body.limit, body.user, body.role);
+    GetOneMy(id) {
+        return this.courseService.getOneMy(id);
+    }
+    GetAllUser(body, user) {
+        console.log(user);
+        if (user.role === 'student' || user.role === 'teacher') {
+            return this.courseService.getallUser(body.name, body.price, body.descipline, body.page, body.limit, user.user_ident, user.role);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
     }
     Create(dto, user) {
         if (user.role === 'admin') {
             return this.courseService.create(dto);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    Delete({ id }, user) {
+        if (user.role === 'admin') {
+            return this.courseService.delete(id);
         }
         else
             throw new common_1.ForbiddenException('not enough privilege');
@@ -49,6 +64,54 @@ let CoursesController = class CoursesController {
     CheckIsMy({ id }, user) {
         if (user.role === 'student') {
             return this.courseService.checkIsMy(id, user.user_ident);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    AddMaterial({ id, name, description }, user) {
+        if (user.role === 'teacher') {
+            return this.courseService.AddMaterial(id, name, description);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    GetMaterial({ id }) {
+        return this.courseService.GetMaterial(id);
+    }
+    DelMaterial({ id }) {
+        return this.courseService.DelMaterial(id);
+    }
+    GetStudsByTest({ id }, user) {
+        if (user.role === 'teacher') {
+            return this.courseService.GetStudsByTest(id);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    AddTest({ test, id }, user) {
+        if (user.role === 'teacher') {
+            return this.courseService.AddTest(test, id);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    GetTest({ id }, user) {
+        if (user.role === 'student') {
+            return this.courseService.GetTest(id);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    DelTest({ id }, user) {
+        if (user.role === 'teacher') {
+            return this.courseService.DelTest(id);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
+    SaveSuccess({ id }, user) {
+        if (user.role === 'student') {
+            return this.courseService.SaveSuccess(id, user.user_ident);
         }
         else
             throw new common_1.ForbiddenException('not enough privilege');
@@ -70,11 +133,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "GetOne", null);
 __decorate([
-    (0, common_1.Get)('getallUser'),
+    (0, common_1.Get)('getoneMy/:id'),
     (0, common_1.UseGuards)(guard_1.JwtGuard),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetOneMy", null);
+__decorate([
+    (0, common_1.Post)('getallUser'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "GetAllUser", null);
 __decorate([
@@ -86,6 +158,15 @@ __decorate([
     __metadata("design:paramtypes", [course_dto_1.CourseDto, Object]),
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "Create", null);
+__decorate([
+    (0, common_1.Post)('deleteCourse'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "Delete", null);
 __decorate([
     (0, common_1.Post)('buy'),
     (0, common_1.UseGuards)(guard_1.JwtGuard),
@@ -104,6 +185,76 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], CoursesController.prototype, "CheckIsMy", null);
+__decorate([
+    (0, common_1.Post)('addMaterial'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "AddMaterial", null);
+__decorate([
+    (0, common_1.Post)('getMaterial'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetMaterial", null);
+__decorate([
+    (0, common_1.Post)('delMaterial'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "DelMaterial", null);
+__decorate([
+    (0, common_1.Post)('getStudsByTest'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetStudsByTest", null);
+__decorate([
+    (0, common_1.Post)('addTest'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "AddTest", null);
+__decorate([
+    (0, common_1.Post)('getTest'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "GetTest", null);
+__decorate([
+    (0, common_1.Post)('delTest'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "DelTest", null);
+__decorate([
+    (0, common_1.Post)('saveSuccess'),
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], CoursesController.prototype, "SaveSuccess", null);
 exports.CoursesController = CoursesController = __decorate([
     (0, common_1.Controller)('courses'),
     __metadata("design:paramtypes", [courses_service_1.CourseService])

@@ -59,4 +59,54 @@ export class UserService{
         return user;
     }
 
+    async DeleteUser(name : string){
+        const user = await this.prisma.students.findFirst({
+            where: {
+                fio: name
+            }
+        })
+        if(!user)
+        {
+            const user = await this.prisma.teachers.findFirst({
+                where: {
+                    fio: name
+                }
+            })
+            if(!user)
+                throw new ForbiddenException('invalid data');
+            else
+            {
+                await this.prisma.teacherToCourse.deleteMany({
+                    where: {
+                        teacher_id: user.user_ident
+                    }
+                })
+                await this.prisma.teachers.delete({
+                    where: {
+                        user_ident: user.user_ident
+                    }
+                })
+                return user;
+            }
+        }
+        else{
+            await this.prisma.studentToCourse.deleteMany({
+                where: {
+                    student_id: user.user_ident
+                }
+            })
+            await this.prisma.testStatus.deleteMany({
+                where: {
+                    student_id: user.user_ident
+                }
+            })
+            await this.prisma.students.delete({
+                where: {
+                    user_ident: user.user_ident
+                }
+            })
+            return user;
+        }
+    }
+
 }

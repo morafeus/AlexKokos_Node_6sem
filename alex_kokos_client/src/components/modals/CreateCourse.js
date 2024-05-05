@@ -28,9 +28,9 @@ const CreateCourse = observer(({ show, onHide }) => {
     }
   }, [descipline.selectedType]);
 
-  const addCourse = async () => {
+  const addCourse = () => {
     try {
-      await createCourse(name, +cost, description, +descipline.selectedType.descipline_id, teachers.selectedType.user_ident).then(data => {
+      createCourse(name, +cost, description, +descipline.selectedType.descipline_id, teachers.selectedType.user_ident).then(data => {
          setName('');
         setCost('');
         setDescription('');
@@ -41,7 +41,7 @@ const CreateCourse = observer(({ show, onHide }) => {
       });
      
     } catch (e) {
-      alert(e);
+      alert(e.response.data);
     }
   };
 

@@ -32,6 +32,7 @@ export class RtJwtStrategy extends PassportStrategy(
                     fio: payload.fio
                 }
             })
+            user['role'] = payload.role;
         }
 
         if(payload.role == 'student') {
@@ -40,8 +41,9 @@ export class RtJwtStrategy extends PassportStrategy(
                     fio: payload.fio
                 }
             })
+            user['role'] = payload.role;
         } 
-        user['role'] == payload.role;
+     
 
         const refreshToken = req.get('authorization').replace('Bearer', '').trim();
 

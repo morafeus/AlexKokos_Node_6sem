@@ -29,6 +29,7 @@ export const check = async () => {
 
     try
     {
+        console.log(localStorage.getItem('refresh-token'))
         const {data} = await $refreshHost.get('auth/refresh');
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('refresh-token', data.refresh_token)

@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Context } from ".";
 import AppRouter from "./components/AppRouter";
 import NavBar from "./components/NavBar";
+import { useConnectSocket } from "./hooks/useConnectSocket";
 import { check } from "./http/userAPI";
 
 const App = observer(() => {

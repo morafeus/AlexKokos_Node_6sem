@@ -42,6 +42,18 @@ export class UserController {
         else
             throw new ForbiddenException('not enough privilege')
     }
+
+    @Post('deleteUser')
+    DeleteUser(@Body() {name}, @GetUser() user)
+    {
+        console.log(user.user_ident);
+        if(user.role === 'admin')
+        {
+            return this.userService.DeleteUser(name);
+        }
+        else
+            throw new ForbiddenException('not enough privilege')
+    }
 }
 
 

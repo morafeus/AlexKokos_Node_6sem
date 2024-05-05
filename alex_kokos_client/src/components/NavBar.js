@@ -1,10 +1,11 @@
-import {React, useContext } from "react";
+import {React, useContext, useState } from "react";
 import { NavLink, Link, useNavigate} from "react-router-dom";
 import { Context } from "../index";
 import { ADMIN_ROUTE, LOGIN_ROUTE, MAIN_ROUTE, MY_MAIN_ROUTE, MY_PROFILE } from "../utils/consts";
 import {Button, Container, Navbar} from 'react-bootstrap'
 import { observer } from "mobx-react-lite";
 import { logoutFunc} from "../http/userAPI";
+import Chat from "./modals/Chat";
 
 
 const NavBar =  observer(() => {
@@ -17,6 +18,7 @@ const NavBar =  observer(() => {
         await logoutFunc();
     }
 
+    const [chatVisible, setChatVisible] = useState(false);
   
 
     return (
@@ -38,6 +40,9 @@ const NavBar =  observer(() => {
                     <li className="nav-item">
                         <Link className="nav-link" to={MY_PROFILE}>Profile</Link>
                     </li>
+                    <li className="nav-item active">
+                            <Link className="nav-link" onClick={() => setChatVisible(true)}>Chat <span className="sr-only">(current)</span></Link>
+                        </li>
                     </nav>
                 }
                 {user.user.role == 'teacher' && 
@@ -48,6 +53,9 @@ const NavBar =  observer(() => {
                     <li className="nav-item">
                         <Link className="nav-link" to={MY_MAIN_ROUTE}>My Courses</Link>
                     </li>
+                    <li className="nav-item active">
+                            <Link className="nav-link" onClick={() => setChatVisible(true)}>Chat <span className="sr-only">(current)</span></Link>
+                        </li>
                     </nav>
                 }
                 {user.user.role == 'admin' && 
@@ -55,6 +63,10 @@ const NavBar =  observer(() => {
                         <li className="nav-item active">
                             <Link className="nav-link" to={MAIN_ROUTE}>Home <span className="sr-only">(current)</span></Link>
                         </li>
+                        <li className="nav-item active">
+                            <Link className="nav-link" onClick={() => setChatVisible(true)}>Chat <span className="sr-only">(current)</span></Link>
+                        </li>
+                        
                     </nav>
                 }
           
@@ -82,7 +94,10 @@ const NavBar =  observer(() => {
                 :
                 <Button onClick={() => history(LOGIN_ROUTE)}>LogIN</Button>
             }
+            <Chat show={chatVisible}
+                onHide={() => setChatVisible(false)}/>
         </Navbar>
+        
     )
 })
 

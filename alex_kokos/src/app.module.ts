@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CoursesModule } from './courses/courses.module';
 import { DesciplineModule } from './desciplines/desciplines.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SocketService } from './socket/socket.service';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 
@@ -18,5 +19,6 @@ import { UserModule } from './user/user.module';
     CoursesModule,
     UserModule
   ],
+  providers: [SocketService]
 })
 export class AppModule {}

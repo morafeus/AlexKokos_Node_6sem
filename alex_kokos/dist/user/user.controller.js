@@ -43,6 +43,14 @@ let UserController = class UserController {
         else
             throw new common_1.ForbiddenException('not enough privilege');
     }
+    DeleteUser({ name }, user) {
+        console.log(user.user_ident);
+        if (user.role === 'admin') {
+            return this.userService.DeleteUser(name);
+        }
+        else
+            throw new common_1.ForbiddenException('not enough privilege');
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -74,6 +82,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "UpdateBalance", null);
+__decorate([
+    (0, common_1.Post)('deleteUser'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, decorater_1.GetUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "DeleteUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('users'),

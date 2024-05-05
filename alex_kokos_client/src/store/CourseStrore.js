@@ -13,7 +13,14 @@ export default class CourseStore {
         this._name = ''
         this._price = 0
         this._selectedDescipline = {}
+        this._myCourse = {}
         makeAutoObservable(this);
+    }
+
+ 
+
+    setMyCourse(myCourse){
+        this._myCourse = myCourse
     }
 
     setSelectedDescipline(descipline){
@@ -49,6 +56,12 @@ export default class CourseStore {
     setName(name){
         this.setPage(1);
         this._name = name
+    }
+
+
+
+    get myCourse(){
+        return this._myCourse;
     }
 
     get selectedDescipline(){

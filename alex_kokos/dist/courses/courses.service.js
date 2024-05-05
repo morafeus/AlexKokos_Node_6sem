@@ -1119,7 +1119,7 @@ let CourseService = class CourseService {
                 }
             }
         }
-        return courses;
+        return { courses, count };
     }
     async getOne(id) {
         const course = await this.prisma.courses.findFirst({
@@ -1135,6 +1135,42 @@ let CourseService = class CourseService {
                         test_id: true,
                         test_name: true,
                         test_desc: true
+                    }
+                },
+                TeacherToCourse: {
+                    select: {
+                        Teachers: {
+                            select: {
+                                fio: true,
+                                Desciplines: { select: { descipline_name: true } },
+                            }
+                        }
+                    }
+                }
+            },
+        });
+        return course;
+    }
+    async getOneMy(id) {
+        const course = await this.prisma.courses.findFirst({
+            where: { course_id: +id },
+            select: {
+                course_id: true,
+                course_name: true,
+                course_cost: true,
+                course_description: true,
+                Desciplines: { select: { descipline_name: true } },
+                Tests: {
+                    select: {
+                        test_id: true,
+                        test_name: true,
+                        test_desc: true
+                    }
+                },
+                Materials: {
+                    select: {
+                        material_id: true,
+                        material_name: true
                     }
                 },
                 TeacherToCourse: {
@@ -1181,6 +1217,44 @@ let CourseService = class CourseService {
             throw Error();
         }
     }
+    async delete(id) {
+        const course = await this.prisma.courses.findFirst({
+            where: {
+                course_id: +id
+            }
+        });
+        await this.prisma.studentToCourse.delete({
+            where: {
+                course_id: course.course_id
+            }
+        });
+        await this.prisma.teacherToCourse.delete({
+            where: {
+                course_id: course.course_id
+            }
+        });
+        await this.prisma.studentToCourse.delete({
+            where: {
+                course_id: course.course_id
+            }
+        });
+        await this.prisma.tests.delete({
+            where: {
+                course_id: course.course_id
+            }
+        });
+        await this.prisma.materials.delete({
+            where: {
+                course_id: course.course_id
+            }
+        });
+        await this.prisma.courses.delete({
+            where: {
+                course_id: course.course_id
+            },
+        });
+        return course;
+    }
     async buyCourse(course_id, user_id) {
         const course = await this.prisma.courses.findFirst({
             where: {
@@ -1216,8 +1290,142 @@ let CourseService = class CourseService {
                 student_id: +user_id
             }
         });
-        console.log(STC);
         return STC;
+    }
+    async AddMaterial(id, name, info) {
+        if (name != '' && info != '') {
+            const material = await this.prisma.materials.create({
+                data: {
+                    course_id: +id,
+                    material_name: name,
+                    material_ingo: info
+                }
+            });
+            return material;
+        }
+        else {
+            throw new common_1.ForbiddenException("invalid params");
+        }
+    }
+    async GetMaterial(id) {
+        const material = await this.prisma.materials.findFirst({
+            where: {
+                material_id: +id
+            }
+        });
+        return material;
+    }
+    async DelMaterial(id) {
+        const material = await this.prisma.materials.delete({
+            where: {
+                material_id: +id
+            }
+        });
+        return material;
+    }
+    async GetStudsByTest(id) {
+        console.log(id);
+        const students = await this.prisma.testStatus.findMany({
+            where: {
+                test_id: +id
+            },
+            select: {
+                Students: {
+                    select: {
+                        fio: true,
+                        user_ident: true
+                    }
+                },
+                Tests: {
+                    select: {
+                        test_name: true
+                    }
+                }
+            }
+        });
+        console.log(students);
+        return students;
+    }
+    async AddTest(test, id) {
+        try {
+            const newTest = await this.prisma.tests.create({
+                data: {
+                    test_name: test.testName,
+                    test_desc: test.testDescription,
+                    course_id: +id
+                }
+            });
+            for (const element of test.questions) {
+                let answers = '';
+                let count = 0;
+                for (const answer of element.answers) {
+                    answers += answer + '&';
+                    count++;
+                }
+                await this.prisma.answers.create({
+                    data: {
+                        answers: answers.slice(0, -1),
+                        question: element.question,
+                        answer_right: +element.answer_right - 1,
+                        answer_count: +count,
+                        test_id: +newTest.test_id
+                    }
+                });
+            }
+            return newTest;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error('Failed to add test');
+        }
+    }
+    async GetTest(id) {
+        const test = await this.prisma.tests.findFirst({
+            where: {
+                test_id: id
+            },
+            select: {
+                test_name: true,
+                test_desc: true,
+                Answers: true
+            }
+        });
+        console.log(test);
+        return test;
+    }
+    async DelTest(id) {
+        const test = await this.prisma.tests.findFirst({
+            where: {
+                test_id: +id
+            }
+        });
+        await this.prisma.testStatus.deleteMany({
+            where: {
+                test_id: test.test_id
+            }
+        });
+        await this.prisma.answers.deleteMany({
+            where: {
+                test_id: test.test_id
+            }
+        });
+        await this.prisma.tests.delete({
+            where: {
+                test_id: test.test_id
+            }
+        });
+        console.log(test);
+        return test;
+    }
+    async SaveSuccess(id, ident) {
+        const status = await this.prisma.testStatus.create({
+            data: {
+                test_id: +id,
+                student_id: +ident
+            }
+        });
+        console.log(status);
+        return status;
     }
 };
 exports.CourseService = CourseService;

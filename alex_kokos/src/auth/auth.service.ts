@@ -219,16 +219,17 @@ export class AuthService{
                 user_role: role
             }
         })
-     
 
         if(!user || !user.refresh_token)
         {
             throw new ForbiddenException('Refresh token incorrect');
         }
+
         if(user.refresh_token != rt)
         {
             throw new ForbiddenException('Refresh token incorrect');
         }
+
         var tokens;
         if(user.user_role === 'teacher')
         {
@@ -240,6 +241,7 @@ export class AuthService{
             tokens = await this.signToken(teacher.user_ident, teacher.fio,"teacher")
             await this.updateRt(teacher.user_ident,'teacher', tokens.refresh_token);
         }
+
         if(user.user_role === 'student')
         {
             const student = await this.prisma.students.findFirst({
@@ -250,12 +252,14 @@ export class AuthService{
             tokens = await this.signToken(student.user_ident, student.fio,"student")
             await this.updateRt(student.user_ident,'student', tokens.refresh_token);
         }
+
         if(user.user_role === 'admin')
         {
             tokens = await this.signToken(0, 'admin',"admin")
 
             await this.updateRt(0,'admin', tokens.refresh_token);
         }
+        
         return tokens
     }    
 

@@ -1,21 +1,27 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Container, Card, Button, Row, Col, ListGroup, ListGroupItem} from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Context } from "..";
 import { buyCourse, checkIsMy, fetchCourses, fetchOneCourse } from "../http/courseAPI";
+import { deleteCourse } from "../http/courseAPI";
+import { MAIN_ROUTE } from "../utils/consts";
 
 const Course = () => {
     const {user} = useContext(Context);
     const [course, setCourse] = useState({})
     const [check, setCheck] = useState(0)
     const params = useParams();
+    const history = useNavigate();
     useEffect(() => {
         try{
         fetchOneCourse(params.id).then(data => setCourse(data))
-        checkIsMy(params.id).then(data => {
-            if(data.data.course_id == params.id)
-            setCheck(1)
-        })
+        if(user.user.role === 'student')
+        {
+            checkIsMy(params.id).then(data => {
+                if(data.data.course_id == params.id)
+                setCheck(1)
+            })
+        }
         }
         catch(e){
             console.log(e);
@@ -32,6 +38,11 @@ const Course = () => {
         catch(e){
             console.log(e);
         }
+    }
+
+    const DeleteCourse = () => {
+        deleteCourse(course.course_id);
+        history(MAIN_ROUTE);
     }
 
     return (
@@ -68,6 +79,11 @@ const Course = () => {
                     </Card>
                 </Col>
             </Row>
+            {user.user.role == 'admin' && 
+            <Row>
+                <Button variant="danger" onClick={DeleteCourse}>DELETE</Button>
+            </Row>
+            }
             {user.user.role == 'student' && check === 0 && 
             <Row className="align-items-end">
                 <Container className="d-flex justify-content-end align-items-center">

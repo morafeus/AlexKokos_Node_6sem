@@ -36,4 +36,19 @@ export declare class UserController {
         email: string;
         user_password: string;
     }>;
+    DeleteUser({ name }: {
+        name: any;
+    }, user: any): Promise<{
+        user_ident: number;
+        fio: string;
+        balance: number;
+        email: string;
+        user_password: string;
+    } | {
+        user_ident: number;
+        fio: string;
+        email: string;
+        user_password: string;
+        descipline: number;
+    }>;
 }

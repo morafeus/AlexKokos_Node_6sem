@@ -14,20 +14,46 @@ export declare class CoursesController {
         count: any;
     }>;
     GetOne(id: any): Promise<{
-        course_id: number;
-        course_name: string;
-        course_cost: number;
-        course_description: string;
         Desciplines: {
             descipline_name: string;
         };
         TeacherToCourse: {
             Teachers: {
+                fio: string;
                 Desciplines: {
                     descipline_name: string;
                 };
-                fio: string;
             };
+        }[];
+        course_id: number;
+        course_name: string;
+        course_cost: number;
+        course_description: string;
+        Tests: {
+            test_id: number;
+            test_name: string;
+            test_desc: string;
+        }[];
+    }>;
+    GetOneMy(id: any): Promise<{
+        Desciplines: {
+            descipline_name: string;
+        };
+        TeacherToCourse: {
+            Teachers: {
+                fio: string;
+                Desciplines: {
+                    descipline_name: string;
+                };
+            };
+        }[];
+        course_id: number;
+        course_name: string;
+        course_cost: number;
+        course_description: string;
+        Materials: {
+            material_id: number;
+            material_name: string;
         }[];
         Tests: {
             test_id: number;
@@ -41,14 +67,24 @@ export declare class CoursesController {
         descipline: number;
         page: number;
         limit: number;
-        user: number;
-        role: string;
-    }): Promise<any>;
+    }, user: any): Promise<{
+        courses: any;
+        count: number;
+    }>;
     Create(dto: CourseDto, user: {
         id: number;
         fio: string;
         role: string;
     }): Promise<{
+        course_id: number;
+        course_name: string;
+        course_cost: number;
+        course_description: string;
+        course_descipline: number;
+    }>;
+    Delete({ id }: {
+        id: any;
+    }, user: any): Promise<{
         course_id: number;
         course_name: string;
         course_cost: number;
@@ -67,6 +103,81 @@ export declare class CoursesController {
     }, user: any): Promise<{
         STC_id: number;
         course_id: number;
+        student_id: number;
+    }>;
+    AddMaterial({ id, name, description }: {
+        id: any;
+        name: any;
+        description: any;
+    }, user: any): Promise<{
+        material_id: number;
+        material_name: string;
+        course_id: number;
+        material_ingo: string;
+    }>;
+    GetMaterial({ id }: {
+        id: any;
+    }): Promise<{
+        material_id: number;
+        material_name: string;
+        course_id: number;
+        material_ingo: string;
+    }>;
+    DelMaterial({ id }: {
+        id: any;
+    }): Promise<{
+        material_id: number;
+        material_name: string;
+        course_id: number;
+        material_ingo: string;
+    }>;
+    GetStudsByTest({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        Students: {
+            fio: string;
+            user_ident: number;
+        };
+        Tests: {
+            test_name: string;
+        };
+    }[]>;
+    AddTest({ test, id }: {
+        test: any;
+        id: any;
+    }, user: any): Promise<{
+        test_id: number;
+        test_name: string;
+        test_desc: string;
+        course_id: number;
+    }>;
+    GetTest({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        test_name: string;
+        test_desc: string;
+        Answers: {
+            answer_id: number;
+            question: string;
+            answers: string;
+            answer_count: number;
+            answer_right: number;
+            test_id: number;
+        }[];
+    }>;
+    DelTest({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        test_id: number;
+        test_name: string;
+        test_desc: string;
+        course_id: number;
+    }>;
+    SaveSuccess({ id }: {
+        id: any;
+    }, user: any): Promise<{
+        status_id: number;
+        test_id: number;
         student_id: number;
     }>;
 }

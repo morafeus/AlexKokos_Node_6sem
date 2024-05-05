@@ -24,7 +24,7 @@ export const authRoutes = [
         Component: Profile
     },
     {
-        path: MY_COURSE_ROUTE,
+        path: MY_COURSE_ROUTE + '/:id',
         Component: MyCourse
     },
 

@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Answers {
-  answer_id    Int    @id(map: "PK__Answers__33724318FAE76707")
+  answer_id    Int    @id(map: "PK__Answers__337243181EF721AD") @default(autoincrement())
   question     String @db.NVarChar(100)
   answers      String @db.NVarChar(300)
   answer_count Int

@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { CourseDto } from "src/auth/dto/course.dto";
 import { Test } from "@nestjs/testing";
+import { Answers } from "@prisma/client";
 
 
 
@@ -1193,7 +1194,7 @@ export class CourseService{
             }
 
         }
-        return courses;
+        return {courses, count};
     }
 
     async getOne(id: number){
@@ -1211,6 +1212,45 @@ export class CourseService{
                         test_id: true,
                         test_name: true,
                         test_desc: true
+                    }
+                },
+                TeacherToCourse: {
+                    select: {
+                      Teachers: {
+                        select: {
+                          fio: true,
+                          Desciplines: {select: {descipline_name: true}},
+                        }
+                    }
+                }
+            } 
+                
+            },
+        })
+        return course;
+    }
+
+    async getOneMy(id: number){
+       
+        const course = await this.prisma.courses.findFirst({
+            where: {course_id : +id},
+            select: {
+                course_id: true,
+                course_name: true,
+                course_cost: true,
+                course_description: true,
+                Desciplines: {select: {descipline_name: true}},
+                Tests: {
+                    select: {
+                        test_id: true,
+                        test_name: true,
+                        test_desc: true
+                    }
+                },
+                Materials: {
+                    select: {
+                        material_id: true,
+                        material_name: true
                     }
                 },
                 TeacherToCourse: {
@@ -1264,6 +1304,51 @@ export class CourseService{
        
     }
 
+    async delete(id:number) {
+       
+            
+            const course = await this.prisma.courses.findFirst({
+                where: {
+                    course_id: +id
+                }
+            })
+
+            await this.prisma.studentToCourse.delete({
+                where: {
+                    course_id: course.course_id
+                } as any
+            })
+            await this.prisma.teacherToCourse.delete({
+                where: {
+                    course_id: course.course_id
+                } as any
+            })
+            await this.prisma.studentToCourse.delete({
+                where: {
+                    course_id: course.course_id
+                } as any
+            })
+            await this.prisma.tests.delete({
+                where : {
+                    course_id: course.course_id
+                } as any
+            })
+            await this.prisma.materials.delete({
+                where: {
+                    course_id: course.course_id
+                } as any
+            })
+            await this.prisma.courses.delete({
+                where: {
+                    course_id: course.course_id
+                },
+                
+            })
+
+            return course;
+       
+    }
+
     async buyCourse(course_id, user_id)
     {
         const course = await this.prisma.courses.findFirst({
@@ -1303,9 +1388,167 @@ export class CourseService{
                 student_id: +user_id
             }
         })
-        console.log(STC);
         return STC
+    }
+
+    async AddMaterial(id: number, name: string, info: string)
+    {
+        if(name != '' && info != '')
+        {
+        const material = await this.prisma.materials.create({
+            data: {
+                course_id: +id,
+                material_name: name,
+                material_ingo: info
+            }
+        })
+        return material
+        }
+        else{
+            throw new ForbiddenException("invalid params");
+        }
+    }
+
+    async GetMaterial(id: number)
+    {
+        const material = await this.prisma.materials.findFirst({
+            where: {
+                material_id: +id
+            }
+        })
+        return material
+    }
+
+    async DelMaterial(id: number)
+    {
+        const material = await this.prisma.materials.delete({
+            where: {
+                material_id: +id
+            }
+        })
+        return material
+    }
+
+    async GetStudsByTest(id: number)
+    {
+        console.log(id);
+        const students = await this.prisma.testStatus.findMany({
+            where: {
+                test_id: +id
+            },
+            select: {
+                Students: {
+                    select: {
+                        fio: true,
+                        user_ident: true
+                    }
+                },
+                Tests: {
+                    select: {
+                        test_name: true
+                    }
+                }
+            }
+        })
+        console.log(students);
+        return students;
     }
     
 
+    async AddTest(test, id: number) {
+        try {
+          const newTest = await this.prisma.tests.create({
+            data: {
+              test_name: test.testName,
+              test_desc: test.testDescription,
+              course_id: +id
+            }
+          });
+ 
+      
+          for (const element of test.questions) {
+            let answers = '';
+            let count = 0;
+      
+            for (const answer of element.answers) {
+              answers += answer + '&';
+              count++;
+            }
+
+            
+            await this.prisma.answers.create({
+              data: {
+                answers: answers.slice(0, -1),
+                question: element.question,
+                answer_right: +element.answer_right - 1,
+                answer_count: +count,
+                test_id: +newTest.test_id as any // Изменение здесь
+              } as any
+            });
+          }
+      
+          return newTest;
+        } catch (error) {
+          console.error(error);
+          throw new Error('Failed to add test');
+        }
+    }
+
+    async GetTest(id: number){
+        const test = await this.prisma.tests.findFirst({
+            where: {
+                test_id: id
+            },
+            select :{
+                test_name: true,
+                test_desc: true,
+                Answers : true
+            }
+        })
+        console.log(test);
+        return test;
+    }
+
+
+    async DelTest(id: number){
+        const test = await this.prisma.tests.findFirst({
+            where: {
+                test_id: +id
+            }
+        })
+
+        await this.prisma.testStatus.deleteMany({
+            where: {
+                test_id: test.test_id
+            }
+        })
+
+        await this.prisma.answers.deleteMany({
+            where: {
+                test_id: test.test_id
+            }
+        })
+
+        await this.prisma.tests.delete({
+            where : {
+                test_id: test.test_id
+            }
+        })
+        console.log(test);
+        return test;
+    }
+
+    async SaveSuccess(id: number, ident: number)
+    {
+        const status = await this.prisma.testStatus.create({
+            data: {
+                test_id: +id,
+                student_id: +ident
+            } as any
+        })
+        console.log(status);
+        return status;
+    }
+
+  
 }
