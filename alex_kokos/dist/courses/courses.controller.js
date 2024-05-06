@@ -23,7 +23,6 @@ let CoursesController = class CoursesController {
         this.courseService = courseService;
     }
     GetAll(body) {
-        console.log(body.price);
         return this.courseService.getall(body.name, body.price, body.descipline, body.page, body.limit);
     }
     GetOne(id) {
@@ -33,7 +32,6 @@ let CoursesController = class CoursesController {
         return this.courseService.getOneMy(id);
     }
     GetAllUser(body, user) {
-        console.log(user);
         if (user.role === 'student' || user.role === 'teacher') {
             return this.courseService.getallUser(body.name, body.price, body.descipline, body.page, body.limit, user.user_ident, user.role);
         }

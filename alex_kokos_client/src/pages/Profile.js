@@ -9,7 +9,9 @@ const Profile = observer(() => {
 
     useEffect( () => {
         try{
-            getStudent().then(data => setUser(data.data));
+            getStudent().then(data => {console.log(data.data.balance);
+                setUser(data.data)});
+            
         }
         catch(e){
             console.log(e);
@@ -17,7 +19,7 @@ const Profile = observer(() => {
     }, [])
 
     const addBalance = () => {
-        console.log(balance);
+        
         if(balance > 0){
             try{
                 updateBalance(balance).then(data=> setUser(data.data))

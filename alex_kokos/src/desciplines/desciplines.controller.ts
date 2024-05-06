@@ -9,8 +9,7 @@ import { DesciplineService } from './desciplines.service';
 
 @Controller('desciplines')
 export class DesciplinesController {
-    constructor(private desciplineService: DesciplineService) {}
-    
+    constructor(private desciplineService: DesciplineService) {} 
     @Get('getall')
     getAll() {
         return this.desciplineService.getall();

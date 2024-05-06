@@ -25,7 +25,6 @@ let AuthService = class AuthService {
     }
     async signup(dto) {
         const hash = await argon.hash(dto.password);
-        console.log(dto.login);
         if (dto.login === 'admin')
             throw new common_1.ForbiddenException('This login is already exist');
         const teacher = await this.prisma.teachers.findFirst({
@@ -67,6 +66,7 @@ let AuthService = class AuthService {
         if (dto.login === 'admin' && dto.password === 'admin') {
             tokens = await this.signToken(0, 'admin', 'admin');
             await this.updateRt(0, 'admin', tokens.refresh_token);
+            console.log(tokens);
             return tokens;
         }
         const user = await this.prisma.students.findFirst({
@@ -91,11 +91,13 @@ let AuthService = class AuthService {
         if (user) {
             tokens = await this.signToken(user.user_ident, user.fio, "student");
             await this.updateRt(user.user_ident, 'student', tokens.refresh_token);
+            console.log(tokens);
             return tokens;
         }
         else if (teacher) {
             tokens = await this.signToken(teacher.user_ident, teacher.fio, "teacher");
             await this.updateRt(teacher.user_ident, 'teacher', tokens.refresh_token);
+            console.log(tokens);
             return tokens;
         }
     }

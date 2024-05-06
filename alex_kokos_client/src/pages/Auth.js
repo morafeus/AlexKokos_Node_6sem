@@ -5,6 +5,8 @@ import { NavLink, useLocation, useNavigate  } from "react-router-dom";
 import { Context } from "..";
 import { signin, registration } from "../http/userAPI";
 import {LOGIN_ROUTE, MAIN_ROUTE, REGESTRATE_ROUTE} from '../utils/consts'
+import toastr from 'toastr' 
+
 
 const Auth = observer(() => {
     const location = useLocation();
@@ -17,7 +19,7 @@ const Auth = observer(() => {
 
     const {user} = useContext(Context);
 
-    const click = async () =>{
+    const click = async () =>{   
         let data;
         try{
             if(isLogin)
@@ -31,8 +33,8 @@ const Auth = observer(() => {
             else 
             {
                 const response = await registration(login, password, email);
-                console.log(response);
-                history(LOGIN_ROUTE);
+                if(response)
+                    history(LOGIN_ROUTE);
             }
         }
         catch(e) {

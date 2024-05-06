@@ -18,7 +18,6 @@ export class AuthService{
 
     async signup(dto: AuthDto) {
         const hash = await argon.hash(dto.password);
-        console.log(dto.login);
       
         if(dto.login === 'admin')
             throw new ForbiddenException('This login is already exist');
@@ -69,6 +68,7 @@ export class AuthService{
         {
             tokens = await this.signToken(0, 'admin', 'admin');
             await this.updateRt(0,'admin', tokens.refresh_token);
+            console.log(tokens);
             return tokens;
         }
 
@@ -100,12 +100,14 @@ export class AuthService{
         {
             tokens = await this.signToken(user.user_ident, user.fio,"student")
             await this.updateRt(user.user_ident,'student', tokens.refresh_token);
+            console.log(tokens);
             return tokens ;
         }
         else if(teacher)
         {
             tokens = await this.signToken(teacher.user_ident, teacher.fio,"teacher")
             await this.updateRt(teacher.user_ident,'teacher', tokens.refresh_token);
+            console.log(tokens);
             return tokens;
         }
     }

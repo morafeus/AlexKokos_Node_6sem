@@ -13,7 +13,6 @@ export class CoursesController {
     
     @Post('getall')
     GetAll(@Body() body : {name: string, price: number, descipline: number, page: number, limit: number}) {
-        console.log(body.price)
         return this.courseService.getall(body.name, body.price, body.descipline,  body.page, body.limit)
     }
 
@@ -31,7 +30,6 @@ export class CoursesController {
     @Post('getallUser')
     @UseGuards(JwtGuard)
     GetAllUser(@Body() body : {name: string, price: number, descipline: number, page: number, limit: number}, @GetUser() user) {
-        console.log(user);
         if(user.role === 'student' || user.role === 'teacher')
         {
             return this.courseService.getallUser(body.name, body.price, body.descipline,  body.page, body.limit, user.user_ident, user.role)

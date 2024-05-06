@@ -20,12 +20,11 @@ export class UserController {
     }
 
     @Get('getStudent')
-    getStudent(@GetUser() user : {id: number, fio: string, role:string})
+    getStudent(@GetUser() user )
     {
-        console.log(user.id);
         if(user.role === 'student')
         {
-            return this.userService.getStud(user.id);
+            return this.userService.getStud(user.user_ident);
         }
         else
             throw new ForbiddenException('not enough privilege')
@@ -34,7 +33,7 @@ export class UserController {
     @Post('balance')
     UpdateBalance(@Body() {balance}, @GetUser() user)
     {
-        console.log(user.user_ident);
+        console.log(user);
         if(user.role === 'student')
         {
             return this.userService.UpdateBalance(balance, user.user_ident);
@@ -46,7 +45,7 @@ export class UserController {
     @Post('deleteUser')
     DeleteUser(@Body() {name}, @GetUser() user)
     {
-        console.log(user.user_ident);
+        
         if(user.role === 'admin')
         {
             return this.userService.DeleteUser(name);

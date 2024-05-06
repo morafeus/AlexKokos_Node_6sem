@@ -83,7 +83,7 @@ const CreateTest = ({ show, onHide, courseId }) => {
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header>
-        <Modal.Title id="containted-modal-title-vcenter">Add Teacher</Modal.Title>
+        <Modal.Title id="containted-modal-title-vcenter">Add Test</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>

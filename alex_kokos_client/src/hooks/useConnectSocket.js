@@ -6,6 +6,7 @@ export const useConnectSocket = () => {
     const [message, setMessage] = useState('')
 
     const connectSocket = () => {
+
         SocketApi.createConnection();
         SocketApi.socket?.on('client-path', (data) => {
             setMessage(data.dto)

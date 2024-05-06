@@ -28,15 +28,14 @@ let UserController = class UserController {
         return this.userService.getallTeachersDesc(desc);
     }
     getStudent(user) {
-        console.log(user.id);
         if (user.role === 'student') {
-            return this.userService.getStud(user.id);
+            return this.userService.getStud(user.user_ident);
         }
         else
             throw new common_1.ForbiddenException('not enough privilege');
     }
     UpdateBalance({ balance }, user) {
-        console.log(user.user_ident);
+        console.log(user);
         if (user.role === 'student') {
             return this.userService.UpdateBalance(balance, user.user_ident);
         }
@@ -44,7 +43,6 @@ let UserController = class UserController {
             throw new common_1.ForbiddenException('not enough privilege');
     }
     DeleteUser({ name }, user) {
-        console.log(user.user_ident);
         if (user.role === 'admin') {
             return this.userService.DeleteUser(name);
         }

@@ -4,7 +4,7 @@ import CreateDescipline from "../components/modals/CreateDescipline"
 import CreateTeacher from "../components/modals/CreateTeacher"
 import CreateCourse from "../components/modals/CreateCourse"
 import CreateTest from "../components/modals/CreateTest";
-import { deleteCourse, deleteUser } from "../http/courseAPI";
+import { deleteUser } from "../http/courseAPI";
 
 const Admin = () => {
     const [courseVisible, setCourseVisible] = useState(false);
@@ -13,7 +13,7 @@ const Admin = () => {
 
     const [name, setName] = useState('');
 
-    const DeleteCourse = () => {
+    const DeleteUser = () => {
         deleteUser(name)
         setName('');
     }
@@ -36,7 +36,7 @@ const Admin = () => {
                         />
                 </Col>
                 <Col md={6}>
-                    <Button onClick={DeleteCourse}>DELETE</Button>
+                    <Button onClick={DeleteUser}>DELETE</Button>
                 </Col>
             </Row>
         </Container>

@@ -40,16 +40,17 @@ let UserService = class UserService {
     async getStud(id) {
         const user = await this.prisma.students.findFirst({
             where: {
-                user_ident: id
+                user_ident: +id
             }
         });
         delete user.user_password;
+        console.log(user);
         return user;
     }
     async UpdateBalance(summ, id) {
         const user = await this.prisma.students.update({
             where: {
-                user_ident: id
+                user_ident: +id
             },
             data: {
                 balance: {
@@ -57,7 +58,6 @@ let UserService = class UserService {
                 }
             }
         });
-        console.log(user);
         return user;
     }
     async DeleteUser(name) {

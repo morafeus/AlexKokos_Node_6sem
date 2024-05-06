@@ -22,9 +22,7 @@ export class CourseService{
         limit = limit || 9;
         let offset = page * limit - limit;
 
-        console.log('name ' + name + ' price ' + price + ' desc ' + descipline + ' page ' + page + ' limit ' + limit);
-
-    
+        
         if(price == 0 && descipline == 0 && name == ''){
             courses = await this.prisma.courses.findMany({skip:offset, take:limit,
                 select: {
@@ -252,7 +250,6 @@ export class CourseService{
     
         }
         if(price != 0 && descipline != 0&& name){
-            console.log(price);
             if(price == 1) {
                 courses = await this.prisma.courses.findMany({
                     skip:offset, take:limit,
@@ -359,7 +356,6 @@ export class CourseService{
             }});
             }
             if(price != 0 && descipline == 0 && !name){
-                console.log(price);
                 if(price == 1)
                 {
                     courses = await this.prisma.courses.findMany({
@@ -1109,7 +1105,7 @@ export class CourseService{
         
             }
             if(price != 0 && descipline != 0&& name){
-                console.log(price);
+          
                 if(price == 1)
                 {
                     courses = await this.prisma.courses.findMany({
@@ -1270,7 +1266,7 @@ export class CourseService{
     }
 
     async create(dto: CourseDto) {
-        console.log(dto.teacher);
+      
         try{   
             const descipline = await this.prisma.courses.findFirst({
                 where:{
@@ -1313,30 +1309,30 @@ export class CourseService{
                 }
             })
 
-            await this.prisma.studentToCourse.delete({
+            await this.prisma.studentToCourse.deleteMany({
                 where: {
                     course_id: course.course_id
-                } as any
+                } 
             })
-            await this.prisma.teacherToCourse.delete({
+            await this.prisma.teacherToCourse.deleteMany({
                 where: {
                     course_id: course.course_id
-                } as any
+                }
             })
-            await this.prisma.studentToCourse.delete({
+            await this.prisma.studentToCourse.deleteMany({
                 where: {
                     course_id: course.course_id
-                } as any
+                }
             })
-            await this.prisma.tests.delete({
+            await this.prisma.tests.deleteMany({
                 where : {
                     course_id: course.course_id
-                } as any
+                }
             })
-            await this.prisma.materials.delete({
+            await this.prisma.materials.deleteMany({
                 where: {
                     course_id: course.course_id
-                } as any
+                } 
             })
             await this.prisma.courses.delete({
                 where: {
@@ -1353,10 +1349,20 @@ export class CourseService{
     {
         const course = await this.prisma.courses.findFirst({
             where: {
-                course_id: +course_id
+                course_id: +course_id,
             }
         })
-        if(course)
+        const stud = await this.prisma.students.findFirst({
+            where:{
+                user_ident: +user_id
+            }
+        })
+
+        if(course.course_cost > stud.balance)
+        {
+            throw new ForbiddenException('not enough money');
+        }
+        else if(course)
         {
             const student = await this.prisma.students.update({
                 where: {
@@ -1431,7 +1437,7 @@ export class CourseService{
 
     async GetStudsByTest(id: number)
     {
-        console.log(id);
+      
         const students = await this.prisma.testStatus.findMany({
             where: {
                 test_id: +id
@@ -1450,7 +1456,7 @@ export class CourseService{
                 }
             }
         })
-        console.log(students);
+    
         return students;
     }
     
@@ -1505,7 +1511,7 @@ export class CourseService{
                 Answers : true
             }
         })
-        console.log(test);
+   
         return test;
     }
 
@@ -1534,20 +1540,29 @@ export class CourseService{
                 test_id: test.test_id
             }
         })
-        console.log(test);
+   
         return test;
     }
 
     async SaveSuccess(id: number, ident: number)
     {
-        const status = await this.prisma.testStatus.create({
-            data: {
+        const check = await this.prisma.testStatus.findFirst({
+            where: {
                 test_id: +id,
                 student_id: +ident
-            } as any
+            }
         })
-        console.log(status);
+     
+        if(!check)
+        {
+            const status = await this.prisma.testStatus.create({
+                data: {
+                    test_id: +id,
+                    student_id: +ident
+                } as any
+            })
         return status;
+        }
     }
 
   

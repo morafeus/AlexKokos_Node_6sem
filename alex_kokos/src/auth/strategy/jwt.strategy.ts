@@ -41,9 +41,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
             user['role'] = payload.role;
         } 
         return user;
-
-        
-
     }
 
     static fromTokenAsCookies(@Req() req: Request){

@@ -9,6 +9,7 @@ import { MAIN_ROUTE } from "../utils/consts";
 const Course = () => {
     const {user} = useContext(Context);
     const [course, setCourse] = useState({})
+    const {courses} = useContext(Context);
     const [check, setCheck] = useState(0)
     const params = useParams();
     const history = useNavigate();
@@ -36,12 +37,17 @@ const Course = () => {
 
         }
         catch(e){
+            history(MAIN_ROUTE);
             console.log(e);
         }
     }
 
     const DeleteCourse = () => {
         deleteCourse(course.course_id);
+        fetchCourses(0, 0, '', 1, 8).then(data => {
+            courses.setCourses(data.courses)
+            courses.setTotalCount(data.count);
+        })
         history(MAIN_ROUTE);
     }
 

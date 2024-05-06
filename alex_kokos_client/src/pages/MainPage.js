@@ -27,7 +27,7 @@ const MainPage = observer(() => {
             courses.setCourses(data.courses)
             courses.setTotalCount(data.count);
         })
-    }, [courses.page, courses.price, courses.selectedDescipline, courses.name])
+    }, [courses.courses, courses.page, courses.price, courses.selectedDescipline, courses.name])
 
     return (
        <Container>

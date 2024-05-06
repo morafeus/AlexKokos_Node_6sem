@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 export const registration = async (login, password, email) => {
     const {data} = await $host.post('auth/signup', {login, email, password})
-    return jwtDecode(data.access_token);
+    return data;
 }
 
 export const signin = async (login, password) => {

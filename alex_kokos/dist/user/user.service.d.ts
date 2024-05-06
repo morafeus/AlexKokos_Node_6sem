@@ -11,9 +11,9 @@ export declare class UserService {
         descipline_name: string;
     }[]>;
     getallTeachersDesc(id: number): Promise<{
-        user_ident: number;
         fio: string;
         descipline: number;
+        user_ident: number;
     }[]>;
     getStud(id: number): Promise<{
         user_ident: number;
@@ -32,14 +32,14 @@ export declare class UserService {
     DeleteUser(name: string): Promise<{
         user_ident: number;
         fio: string;
-        balance: number;
-        email: string;
-        user_password: string;
-    } | {
-        user_ident: number;
-        fio: string;
         email: string;
         user_password: string;
         descipline: number;
+    } | {
+        user_ident: number;
+        fio: string;
+        balance: number;
+        email: string;
+        user_password: string;
     }>;
 }

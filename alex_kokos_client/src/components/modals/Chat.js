@@ -42,9 +42,9 @@ const Chat = ({ show, onHide, materialId }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Container>
+        <Container style={{height: '55vh'}}>
             {messages.map((msg, index) => (
-                <p key={index}>{msg}</p>
+                <p style={{wordBreak: "break-all"}} key={index}>{msg}</p>
             ))}
         </Container>
         

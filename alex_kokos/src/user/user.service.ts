@@ -36,10 +36,11 @@ export class UserService{
     async getStud(id: number){
         const user = await this.prisma.students.findFirst({
             where:{
-                user_ident: id
+                user_ident: +id
             }
         })
         delete user.user_password;
+        console.log(user);
         return user;
     }
 
@@ -47,7 +48,7 @@ export class UserService{
     {
         const user = await this.prisma.students.update({
             where: {
-                user_ident: id
+                user_ident: +id
             },
             data: {
                 balance: {
@@ -55,7 +56,7 @@ export class UserService{
                 } 
             }
         })
-        console.log(user);
+        
         return user;
     }
 

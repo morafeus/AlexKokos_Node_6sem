@@ -12,15 +12,11 @@ export declare class UserController {
         role: string;
     };
     getTeacherDesc(desc: any): Promise<{
-        user_ident: number;
         fio: string;
         descipline: number;
+        user_ident: number;
     }[]>;
-    getStudent(user: {
-        id: number;
-        fio: string;
-        role: string;
-    }): Promise<{
+    getStudent(user: any): Promise<{
         user_ident: number;
         fio: string;
         balance: number;
@@ -41,14 +37,14 @@ export declare class UserController {
     }, user: any): Promise<{
         user_ident: number;
         fio: string;
-        balance: number;
-        email: string;
-        user_password: string;
-    } | {
-        user_ident: number;
-        fio: string;
         email: string;
         user_password: string;
         descipline: number;
+    } | {
+        user_ident: number;
+        fio: string;
+        balance: number;
+        email: string;
+        user_password: string;
     }>;
 }
